@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = 'primary'
-               BlueprintIdentifier = 'C0A8EFC9D3FBFD9F9F7C377DF095CD08'
-               BlueprintName = 'SwiftyJSON'
+               BlueprintIdentifier = '5BA13562A3D11617D6CD60D7A2E3FD66'
+               BlueprintName = 'FirebaseUI-FirebasePhoneAuthUI'
                ReferencedContainer = 'container:Pods.xcodeproj'
-               BuildableName = 'SwiftyJSON.framework'>
+               BuildableName = 'FirebasePhoneAuthUI.bundle'>
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
