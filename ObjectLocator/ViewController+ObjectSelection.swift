@@ -8,7 +8,7 @@ Methods on the main view controller for handling virtual object loading and move
 import UIKit
 import SceneKit
 import ARKit
-import Alamofire
+import Firebase
 
 extension ViewController: VirtualObjectSelectionViewControllerDelegate, VirtualObjectManagerDelegate {
     // MARK: - VirtualObjectManager delegate callbacks
@@ -52,43 +52,6 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, VirtualO
         return uiImage
     }
     
-    func pollForCoordinates(frame: ARFrame?, image: UIImage, labelRequest: Int, object: VirtualObject, cameraTransform:matrix_float4x4) {
-        // get the coordinates from the labelers
-        let parameters: Parameters = [
-            "label_request" : labelRequest
-        ]
-        print("getting coordinates for jobId", parameters)
-        Alamofire.request("https://damp-chamber-71992.herokuapp.com/get_coordinates", method: .post, parameters: parameters, encoding: JSONEncoding.default).responseJSON { response in
-            if let data = response.result.value as? [String:Any],
-                let xCoord = data["x"] as? Double,
-                let yCoord = data["y"] as? Double {
-                if xCoord < 0 || yCoord < 0 {
-                    // poll for the coordinates every 2 seconds
-                    Timer.scheduledTimer(withTimeInterval: TimeInterval(2.0), repeats: false) { timer in
-                        return self.pollForCoordinates(frame: frame, image: image, labelRequest: labelRequest, object: object, cameraTransform: cameraTransform)
-                    }
-                }
-                
-                let objectPixelLocation = CGPoint(x:Double(self.sceneView.bounds.width)*xCoord/Double(image.size.width), y:Double(self.sceneView.bounds.height)*yCoord/Double(image.size.height))
-
-                let (worldPos, _, _) = self.virtualObjectManager.worldPositionFromScreenPosition(objectPixelLocation,
-                                                                                                 in:        self.sceneView,
-                                                                                                 in_img: frame,
-                                                                                                 objectPos: nil)
-                if worldPos == nil {
-                    // TODO: should print debug info
-                    return
-                }
-                self.virtualObjectManager.loadVirtualObject(object, to: worldPos!, cameraTransform: cameraTransform)
-                if object.parent == nil {
-                    self.serialQueue.async {
-                        self.sceneView.scene.rootNode.addChildNode(object)
-                    }
-                }
-            }
-        }
-    }
-    
     func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didSelectObjectAt index: Int) {
         guard let cameraTransform = session.currentFrame?.camera.transform else {
             return
@@ -100,19 +63,36 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, VirtualO
             let object = VirtualObject(definition: definition)
             let imageData:Data? = UIImageJPEGRepresentation(sceneImage, 0.8)!
             let strBase64 = imageData!.base64EncodedString(options: .lineLength64Characters)
-            let parameters: Parameters = [
-                "object_to_find" : "Hard coded for now",
+            let parameters: NSDictionary = [
+                "object_to_find": "Hard coded for now",
                 "image": strBase64
             ]
             // dispatch to the backend for labeling
-            Alamofire.request("https://damp-chamber-71992.herokuapp.com/add_labeling_job", method: .post, parameters: parameters, encoding: JSONEncoding.default).responseJSON { response in
-                debugPrint(response)
-                if let data = response.result.value as? [String: Any],
-                    let jobId:Int = data["job_id"] as? Int {
-                    print("Polling for coordinates!")
-                    self.pollForCoordinates(frame: frameCopy, image: sceneImage, labelRequest: jobId, object: object, cameraTransform: cameraTransform)
+            let jobUUID = UUID().uuidString
+            let dbPath = "labeling_jobs/" + jobUUID
+            self.ref?.child(dbPath).setValue(parameters)
+            let responsePath = "responses/" + jobUUID
+            
+            // listen for any responses
+            self.ref?.child(responsePath).observe(.childAdded, with: { (snapshot) -> Void in
+                print("got a label", snapshot)
+                let values = snapshot.value as! NSDictionary
+                let objectPixelLocation = CGPoint(x:Double(self.sceneView.bounds.width)*(values["x"] as! Double)/Double(sceneImage.size.width), y:Double(self.sceneView.bounds.height)*(values["y"] as! Double)/Double(sceneImage.size.height))
+                let (worldPos, _, _) = self.virtualObjectManager.worldPositionFromScreenPosition(objectPixelLocation,
+                                                                                                 in:        self.sceneView,
+                                                                                                 in_img: frameCopy,
+                                                                                                 objectPos: nil)
+                if worldPos == nil {
+                    // TODO: should print debug info
+                    return
                 }
-            }
+                self.virtualObjectManager.loadVirtualObject(object, to: worldPos!, cameraTransform: cameraTransform)
+                if object.parent == nil {
+                    self.serialQueue.async {
+                        self.sceneView.scene.rootNode.addChildNode(object)
+                    }
+                }
+            })
         }
         myClosure()
     }

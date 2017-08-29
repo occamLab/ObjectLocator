@@ -7,6 +7,9 @@ target 'ObjectLocator' do
 
   # Pods for ARKitExample
   # Pods for FindIt
-  pod 'SwiftyJSON'
-  pod 'Alamofire'
+  pod 'Firebase/Core'
+  pod 'Firebase/Auth'
+  pod 'Firebase/Database'
+  pod 'FirebaseUI/Phone'
+  pod 'FirebaseUI/Auth'
 end

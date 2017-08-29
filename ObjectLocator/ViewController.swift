@@ -10,6 +10,10 @@ import Foundation
 import SceneKit
 import UIKit
 import Photos
+import Firebase
+import FirebaseAuth
+import FirebaseAuthUI
+import FirebasePhoneAuthUI
 
 // TODO: move this to its own file
 public struct CurrentCoordinateInfo {
@@ -42,7 +46,18 @@ public struct LocationInfo {
     }
 }
 
-class ViewController: UIViewController, ARSCNViewDelegate {
+class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
+
+    func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?) {
+        print("got a delegate auth callback")
+        if error != nil {
+            //Problem signing in
+            login()
+        }else {
+            //User is in! Here is where we code after signing in
+            
+        }
+    }
     
     // MARK: - ARKit Config Properties
     
@@ -81,10 +96,15 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var textManager: TextManager!
     var restartExperienceButtonIsEnabled = true
     
+    // MARK: - FireBase handles
+    var auth: Auth?
+    var authUI: FUIAuth?
+    var ref: DatabaseReference?
+
     // MARK: - UI Elements
     
     var spinner: UIActivityIndicatorView?
-    
+
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var messagePanel: UIView!
     @IBOutlet weak var messageLabel: UILabel!
@@ -102,12 +122,37 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        auth = Auth.auth()
+        authUI = FUIAuth.defaultAuthUI()
+        ref = Database.database().reference()
+        // TODO: need to make a signout button with the code below
+        //try! Auth.auth().signOut()
+        checkLoggedIn()
 
         Setting.registerDefaults()
 		setupUIControls()
         setupScene()
         feedbackTimer = Date()
         hapticTimer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: (#selector(getHapticFeedback)), userInfo: nil, repeats: true)
+    }
+    
+    func checkLoggedIn() {
+        Auth.auth().addStateDidChangeListener { auth, user in
+            print("In the check logged in function")
+            if user != nil {
+                // User is signed in.
+            } else {
+                // No user is signed in.
+                self.login()
+            }
+        }
+    }
+    
+    func login() {
+        authUI?.delegate = self
+        authUI?.providers = [FUIPhoneAuth(authUI:authUI!)]
+        let authViewController = authUI?.authViewController()
+        self.present(authViewController!, animated: true, completion: nil)
     }
 
 	override func viewDidAppear(_ animated: Bool) {
@@ -145,9 +190,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 		sceneView.showsStatistics = false
 		
 		sceneView.scene.enableEnvironmentMapWithIntensity(25, queue: serialQueue)
-		
-		setupFocusSquare()
-		
+
 		DispatchQueue.main.async {
 			self.screenCenter = self.sceneView.bounds.mid
 		}
@@ -166,8 +209,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     // MARK: - ARSCNViewDelegate
 	
 	func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-		updateFocusSquare()
-		
 		// If light estimation is enabled, update the intensity of the model's lights and the environment map
 		if let lightEstimate = self.session.currentFrame?.lightEstimate {
 			self.sceneView.scene.enableEnvironmentMapWithIntensity(lightEstimate.ambientIntensity / 40, queue: serialQueue)
@@ -276,7 +317,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             let cameraToObject = Vector3(x:virtualObjectWorldPosition.x - curLocation.location.x,
                                          y:virtualObjectWorldPosition.y - curLocation.location.y,
                                          z:virtualObjectWorldPosition.z - curLocation.location.z).normalized()
-            print("camera to object", cameraToObject)
 
             let negZAxis = curLocation.transformMatrix*Vector3(x: 0.0, y:0.0, z: -1.0)
             let angleDiff = acos(negZAxis.dot(cameraToObject))
@@ -285,7 +325,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             }
         }
         // need to fix this let directionToNextKeypoint = getDirectionToNextKeypoint(currentLocation: curLocation)
-        print(curLocation)
         if(shouldGiveFeedback) {
             let timeInterval = feedbackTimer.timeIntervalSinceNow
             if(-timeInterval > 0.4) {
@@ -375,53 +414,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
 		                            messageType: .planeEstimation)
 	}
 
-    // MARK: - Focus Square
-    
-    var focusSquare: FocusSquare?
-	
-    func setupFocusSquare() {
-		serialQueue.async {
-			self.focusSquare?.isHidden = true
-			self.focusSquare?.removeFromParentNode()
-			self.focusSquare = FocusSquare()
-			self.sceneView.scene.rootNode.addChildNode(self.focusSquare!)
-		}
-		
-		textManager.scheduleMessage("TRY MOVING LEFT OR RIGHT", inSeconds: 5.0, messageType: .focusSquare)
-    }
-	
-	func updateFocusSquare() {
-		guard let screenCenter = screenCenter else { return }
-        
-		DispatchQueue.main.async {
-			var objectVisible = false
-			for object in self.virtualObjectManager.virtualObjects {
-				if self.sceneView.isNode(object, insideFrustumOf: self.sceneView.pointOfView!) {
-					objectVisible = true
-					break
-				}
-			}
-			
-			if objectVisible {
-				self.focusSquare?.hide()
-			} else {
-				self.focusSquare?.unhide()
-			}
-            let (worldPos, planeAnchor, _) = self.virtualObjectManager.worldPositionFromScreenPosition(screenCenter,
-                                                                                                       in: self.sceneView,
-                                                                                                       in_img: nil,
-                                                                                                       objectPos: self.focusSquare?.simdPosition)
-			if let worldPos = worldPos {
-				self.serialQueue.async {
-					self.focusSquare?.update(for: worldPos, planeAnchor: planeAnchor, camera: self.session.currentFrame?.camera)
-				}
-				self.textManager.cancelScheduledMessage(forType: .focusSquare)
-			}
-		}
-	}
-    
 	// MARK: - Error handling
-	
 	func displayErrorMessage(title: String, message: String, allowRestart: Bool = false) {
 		// Blur the background.
 		textManager.blurBackground()

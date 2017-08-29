@@ -39,16 +39,10 @@ extension ViewController: UIPopoverPresentationControllerDelegate {
             self.virtualObjectManager.removeAllVirtualObjects()
             self.addObjectButton.setImage(#imageLiteral(resourceName: "add"), for: [])
             self.addObjectButton.setImage(#imageLiteral(resourceName: "addPressed"), for: [.highlighted])
-            self.focusSquare?.isHidden = true
             
             self.resetTracking()
             
             self.restartExperienceButton.setImage(#imageLiteral(resourceName: "restart"), for: [])
-            
-            // Show the focus square after a short delay to ensure all plane anchors have been deleted.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
-                self.setupFocusSquare()
-            })
             
             // Disable Restart button for a while in order to give the session enough time to restart.
             DispatchQueue.main.asyncAfter(deadline: .now() + 5.0, execute: {
