@@ -12,4 +12,5 @@ target 'ObjectLocator' do
   pod 'Firebase/Database'
   pod 'FirebaseUI/Phone'
   pod 'FirebaseUI/Auth'
+  pod 'Firebase/Storage'
 end

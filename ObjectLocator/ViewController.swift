@@ -49,13 +49,11 @@ public struct LocationInfo {
 class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
 
     func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?) {
-        print("got a delegate auth callback")
         if error != nil {
             //Problem signing in
             login()
         }else {
             //User is in! Here is where we code after signing in
-            
         }
     }
     
@@ -66,10 +64,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
     let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
     
     let session = ARSession()
-    let fallbackConfiguration = ARSessionConfiguration()
+    let fallbackConfiguration = AROrientationTrackingConfiguration()
     
-    let standardConfiguration: ARWorldTrackingSessionConfiguration = {
-        let configuration = ARWorldTrackingSessionConfiguration()
+    let standardConfiguration: ARWorldTrackingConfiguration = {
+        let configuration = ARWorldTrackingConfiguration()
         configuration.planeDetection = .horizontal
         return configuration
     }()
@@ -84,7 +82,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
     var isLoadingObject: Bool = false {
         didSet {
             DispatchQueue.main.async {
-                self.settingsButton.isEnabled = !self.isLoadingObject
                 self.addObjectButton.isEnabled = !self.isLoadingObject
                 self.restartExperienceButton.isEnabled = !self.isLoadingObject
             }
@@ -99,8 +96,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
     // MARK: - FireBase handles
     var auth: Auth?
     var authUI: FUIAuth?
-    var ref: DatabaseReference?
-
+    var db: Database?
+    var storageRef : StorageReference?
+    var observers = [DatabaseReference?]()
+    
     // MARK: - UI Elements
     
     var spinner: UIActivityIndicatorView?
@@ -108,7 +107,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var messagePanel: UIView!
     @IBOutlet weak var messageLabel: UILabel!
-    @IBOutlet weak var settingsButton: UIButton!
     @IBOutlet weak var addObjectButton: UIButton!
     @IBOutlet weak var restartExperienceButton: UIButton!
     
@@ -124,21 +122,24 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
         super.viewDidLoad()
         auth = Auth.auth()
         authUI = FUIAuth.defaultAuthUI()
-        ref = Database.database().reference()
-        // TODO: need to make a signout button with the code below
-        //try! Auth.auth().signOut()
-        checkLoggedIn()
-
-        Setting.registerDefaults()
+        registerAuthListener()
+        db = Database.database()
+        storageRef = Storage.storage().reference()
 		setupUIControls()
         setupScene()
         feedbackTimer = Date()
         hapticTimer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: (#selector(getHapticFeedback)), userInfo: nil, repeats: true)
     }
     
-    func checkLoggedIn() {
+    @IBAction func handleLogout(_ sender: Any) {
+        // kill all observers
+        _ = observers.map { $0?.removeAllObservers() }
+        observers = [DatabaseReference?]()
+        try! Auth.auth().signOut()
+    }
+    
+    func registerAuthListener() {
         Auth.auth().addStateDidChangeListener { auth, user in
-            print("In the check logged in function")
             if user != nil {
                 // User is signed in.
             } else {
@@ -160,7 +161,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
         // Prevent the screen from being dimmed after a while.
 		UIApplication.shared.isIdleTimerDisabled = true
 		
-		if ARWorldTrackingSessionConfiguration.isSupported {
+		if ARWorldTrackingConfiguration.isSupported {
 			// Start the ARSession.
 			resetTracking()
 		} else {
@@ -308,10 +309,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
         var shouldGiveFeedback: Bool = false
         let curLocation = getRealCoordinates(sceneView: sceneView)
         for virtualObject in virtualObjectManager.virtualObjects {
-            let referencePosition = virtualObject.referenceNode.convertPosition(SCNVector3(x: curLocation.location.x, y: curLocation.location.y, z: curLocation.location.z), from:sceneView.scene.rootNode)
-            let distanceToObject = sqrt(referencePosition.x*referencePosition.x +
+            /*let referencePosition = virtualObject.referenceNode.convertPosition(SCNVector3(x: curLocation.location.x, y: curLocation.location.y, z: curLocation.location.z), from:sceneView.scene.rootNode)
+              let distanceToObject = sqrt(referencePosition.x*referencePosition.x +
                                         referencePosition.y*referencePosition.y +
-                                        referencePosition.z*referencePosition.z)
+                                        referencePosition.z*referencePosition.z)*/
             let virtualObjectWorldPosition = virtualObject.referenceNode.convertPosition(SCNVector3(x: 0.0, y: 0.0, z: 0.0), to:sceneView.scene.rootNode)
             // vector from camera to virtual object
             let cameraToObject = Vector3(x:virtualObjectWorldPosition.x - curLocation.location.x,
@@ -347,29 +348,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
         
         return CurrentCoordinateInfo(LocationInfo(x: x, y: y, z: z, yaw: yaw!), transMatrix: transMatrix)
     }
-	
-    // MARK: - Gesture Recognizers
-	
-	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-		virtualObjectManager.reactToTouchesBegan(touches, with: event, in: self.sceneView)
-	}
-	
-	override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-		virtualObjectManager.reactToTouchesMoved(touches, with: event)
-	}
-	
-	override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-		if virtualObjectManager.virtualObjects.isEmpty {
-			chooseObject(addObjectButton)
-			return
-		}
-		virtualObjectManager.reactToTouchesEnded(touches, with: event)
-	}
-	
-	override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-		virtualObjectManager.reactToTouchesCancelled(touches, with: event)
-	}
-	
+
     // MARK: - Planes
 	
 	var planes = [ARPlaneAnchor: Plane]()
@@ -401,6 +380,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
     }
 	
 	func resetTracking() {
+        // get rid of any observers we're waiting on
+        _ = observers.map { $0?.removeAllObservers() }
 		session.run(standardConfiguration, options: [.resetTracking, .removeExistingAnchors])
 		
 		// reset timer

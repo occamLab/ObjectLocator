@@ -15,10 +15,11 @@ class ObjectCell: UITableViewCell {
     
     @IBOutlet weak var objectTitleLabel: UILabel!
     @IBOutlet weak var objectImageView: UIImageView!
-        
+    @IBOutlet weak var objectToSearchFor: UITextField!
+    
     var object: VirtualObjectDefinition? {
         didSet {
-            objectTitleLabel.text = object?.displayName
+            objectTitleLabel.text = "Object to find"
             objectImageView.image = object?.thumbImage
         }
     }
@@ -27,11 +28,11 @@ class ObjectCell: UITableViewCell {
 // MARK: - VirtualObjectSelectionViewControllerDelegate
 
 protocol VirtualObjectSelectionViewControllerDelegate: class {
-    func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didSelectObjectAt index: Int)
+    func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didSelectObjectAt index: Int, objectToFind: String!)
     func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didDeselectObjectAt index: Int)
 }
 
-class VirtualObjectSelectionViewController: UITableViewController {
+class VirtualObjectSelectionViewController: UITableViewController, UITextFieldDelegate {
 
     private var selectedVirtualObjectRows = IndexSet()
     weak var delegate: VirtualObjectSelectionViewControllerDelegate?
@@ -42,6 +43,20 @@ class VirtualObjectSelectionViewController: UITableViewController {
         tableView.separatorEffect = UIVibrancyEffect(blurEffect: UIBlurEffect(style: .light))
     }
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        // Select the currently selected row
+        // TODO: this is hacky, as we only have one row... just select it.
+        if textField.text != nil {
+            delegate?.virtualObjectSelectionViewController(self, didSelectObjectAt: 0, objectToFind: textField.text)
+            self.dismiss(animated: true, completion: nil)
+            return false
+        } else {
+            // TODO: throw an error
+            return true
+        }
+    }
+
     override func viewWillLayoutSubviews() {
         preferredContentSize = CGSize(width: 250, height: tableView.contentSize.height)
     }
@@ -52,8 +67,6 @@ class VirtualObjectSelectionViewController: UITableViewController {
         // Check if the current row is already selected, then deselect it.
         if selectedVirtualObjectRows.contains(indexPath.row) {
             delegate?.virtualObjectSelectionViewController(self, didDeselectObjectAt: indexPath.row)
-        } else {
-            delegate?.virtualObjectSelectionViewController(self, didSelectObjectAt: indexPath.row)
         }
         self.dismiss(animated: true, completion: nil)
     }
@@ -70,7 +83,7 @@ class VirtualObjectSelectionViewController: UITableViewController {
         }
         
         cell.object = VirtualObjectManager.availableObjects[indexPath.row]
-
+        cell.objectToSearchFor.delegate = self
         if selectedVirtualObjectRows.contains(indexPath.row) {
             cell.accessoryType = .checkmark
         } else {

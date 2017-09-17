@@ -16,19 +16,28 @@ const bucket = gcs.bucket(bucketName);
 
 // this is just an arbitrary trigger
 exports.cleanupOldDataCron = functions.pubsub.topic('hourly-tick').onPublish((event) => {
-     admin.database().ref('labeling_jobs').orderByChild('creation_timestamp').endAt((new Date).getTime()-120*1000).once('value').then(function(snapshot) {
-	   snapshot.forEach(function(child) {
-	    	var subRef = admin.database().ref('labeling_jobs/' + child.key + '/assignmentPaths').once('value').then(function(childSnapshot) {
+    return admin.database().ref('labeling_jobs').orderByChild('creation_timestamp').endAt((new Date).getTime()-120*1000).once('value')
+	.then(function(snapshot) {
+	    var reads = [];
+
+	    snapshot.forEach(function(child) {
+	    	 var promise = admin.database().ref('labeling_jobs/' + child.key + '/assignmentPaths').once('value').then(function(childSnapshot) {
+	    		var deletions = [];
 	   		childSnapshot.forEach(function(subChild) {
-				// TODO: this could be more efficiently done in batch
-				admin.database().ref(subChild.val()).remove().catch(function(error) {})
+				deletions.push(admin.database().ref(subChild.val()).remove().catch(function(error) {}))
 			});
-			bucket.file(child.key + '.jpg').delete().catch(function(error) {})
-			admin.database().ref('responses/' + child.key).remove().catch(function(error) {})
-			admin.database().ref('labeling_jobs/' + child.key).remove().catch(function(error) {})
-		});
-	   });
-     }); 
+			deletions.push(bucket.file(child.key + '.jpg').delete().catch(function(error) {}))
+			deletions.push(admin.database().ref('responses/' + child.key).remove().catch(function(error) {}))
+			deletions.push(admin.database().ref('labeling_jobs/' + child.key).remove().catch(function(error) {}))
+			return deletions;
+		 });
+		 reads.push(promise);
+	    });
+	    return Promise.all(reads);
+     	})
+        .catch(function (error) {
+	    console.log(error);
+	});
 });
 
 exports.sendNotification = functions.database.ref('labeling_jobs/{jobUUID}')
@@ -54,39 +63,50 @@ exports.sendNotification = functions.database.ref('labeling_jobs/{jobUUID}')
 	// times if the user has signed in with more than one account.
        let notifiedTokens = new Set();
        let assignmentPaths = new Array();
-       tokenRef.orderByChild("priority").limitToFirst(50).once('value').then(function(snapshot) {
-	    snapshot.forEach(function(child) {
-		var subRef = tokenRef.child(child.key);
-		var addedAssignment = false;
-		subRef.update({'priority': -((new Date).getTime())})
-		subRef.once("value", function(snapshot2) {
-		    snapshot2.forEach(function(child2) {
-			if (child2.key != "priority" && child2.key != "assignments" && !notifiedTokens.has(child2.key)) {
-			    notifiedTokens.add(child2.key)
-			    admin.messaging().sendToDevice(child2.key, payload).then(function (response) {
-				if (!addedAssignment) {
-				    // TODO: write all assignments to the labeling_jobs/jobUUID as a list of references
-				    subRef.child("assignments").update({[event.params.jobUUID]: {"object_to_find": event.data.val()["object_to_find"], "creation_timestamp": event.data.val()["creation_timestamp"]}})
-				    assignmentPaths.push("notification_tokens/" + child.key + "/assignments/" + event.params.jobUUID)
-				    addedAssignment = true;
-				    // TODO: this is bad since it writes multiple times, could do this in batch
-				    admin.database().ref('labeling_jobs/' + event.params.jobUUID).update({'assignmentPaths': assignmentPaths})
-				}
-			    }).catch(function (error) {
-				console.log("Error sending message:", error);
-			    });
-			}
-		    });
-		});
-	    });
-       });
+       return tokenRef.orderByChild("priority").limitToFirst(50).once('value')
+           .then(function(snapshot) {
+	       var promises = [];
+	       snapshot.forEach(function(child) {
+		   var subRef = tokenRef.child(child.key);
+		   var addedAssignment = false;
+		   promises.push(subRef.update({'priority': -((new Date).getTime())}))
+	           var promise = subRef.once("value", function(snapshot2) {
+		       var userPromises = [];
+		       snapshot2.forEach(function(child2) {
+		           if (child2.key != "priority" && child2.key != "assignments" && !notifiedTokens.has(child2.key)) {
+			       // not sure if this works across the various asynchronous threads
+		               notifiedTokens.add(child2.key)
+			       var notificationPromise = admin.messaging().sendToDevice(child2.key, payload).then(function (response) {
+				   var writePromises = [];
+			           if (!addedAssignment) {
+			               // TODO: write all assignments to the labeling_jobs/jobUUID as a list of references
+				       writePromises.push(subRef.child("assignments").update({[event.params.jobUUID]: {"object_to_find": event.data.val()["object_to_find"], "creation_timestamp": event.data.val()["creation_timestamp"]}}))
+				       assignmentPaths.push("notification_tokens/" + child.key + "/assignments/" + event.params.jobUUID)
+				       // not sure if this works properly across multiple promises (we write it over and over... can't be resequenced)
+				       writePromises.push(admin.database().ref('labeling_jobs/' + event.params.jobUUID).update({'assignmentPaths': assignmentPaths}))
+				       addedAssignment = true;
+				   }
+				   return Promise.all(writePromises);
+			    	}).catch(function (error) {
+				    console.log("Error sending message:", error);
+			        });
+			        userPromises.push(notificationPromise);
+			    }
+		       });
+		       return Promise.all(userPromises);
+	           });
+		   promises.push(promise);
+	       });
+	       return Promise.all(promises);
+           })
+           .catch(function (error) {
+	       console.log(error);
+           });
     });
 
 
 exports.addPriority = functions.auth.user().onCreate(event => {
-       console.log("user created", event);
-       var priorityRef = admin.database().ref('notification_tokens/' + event.data.uid)
-       priorityRef.update({'priority': 0})
+       return admin.database().ref('notification_tokens/' + event.data.uid).update({'priority': 0})
 });
 
 // TODO: probably want to remove the notification tokens when user is deleted

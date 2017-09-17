@@ -43,10 +43,7 @@ extension ARFrame {
         // use the scene points since there will be more of them
         let points = features.points
 
-        for i in 0...features.count {
-            let feature = points.advanced(by: Int(i))
-            let featurePos = feature.pointee
-            
+        for featurePos in points {
             let originToFeature = featurePos - ray.origin
             
             let crossProduct = simd_cross(originToFeature, ray.direction)
@@ -192,11 +189,7 @@ extension ARSCNView {
         
         let points = features.points
         
-        for i in 0...features.count {
-            
-            let feature = points.advanced(by: Int(i))
-            let featurePos = feature.pointee
-            
+        for featurePos in points {
             let originToFeature = featurePos - ray.origin
             
             let crossProduct = simd_cross(originToFeature, ray.direction)
@@ -268,10 +261,7 @@ extension ARSCNView {
         var closestFeaturePoint = origin
         var minDistance = Float.greatestFiniteMagnitude
         
-        for i in 0...features.count {
-            let feature = points.advanced(by: Int(i))
-            let featurePos = feature.pointee
-            
+        for featurePos in points {
             let originVector = origin - featurePos
             let crossProduct = simd_cross(originVector, direction)
             let featureDistanceFromResult = simd_length(crossProduct)

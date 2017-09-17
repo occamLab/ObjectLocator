@@ -89,65 +89,7 @@ class VirtualObjectManager {
 			}
 		}
 	}
-	
-	// MARK: - React to gestures
-	
-	private var currentGesture: Gesture?
-	
-	func reactToTouchesBegan(_ touches: Set<UITouch>, with event: UIEvent?, in sceneView: ARSCNView) {
-		if virtualObjects.isEmpty {
-			return
-		}
-		
-		if currentGesture == nil {
-			currentGesture = Gesture.startGestureFromTouches(touches, sceneView, lastUsedObject, self)
-			if let newObject = currentGesture?.lastUsedObject {
-				lastUsedObject = newObject
-			}
-		} else {
-			currentGesture = currentGesture!.updateGestureFromTouches(touches, .touchBegan)
-			if let newObject = currentGesture?.lastUsedObject {
-				lastUsedObject = newObject
-			}
-		}
-	}
-	
-	func reactToTouchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-		if virtualObjects.isEmpty {
-			return
-		}
-		
-		currentGesture = currentGesture?.updateGestureFromTouches(touches, .touchMoved)
-		if let newObject = currentGesture?.lastUsedObject {
-			lastUsedObject = newObject
-		}
-		
-		if let gesture = currentGesture, let object = gesture.lastUsedObject {
-			delegate?.virtualObjectManager(self, transformDidChangeFor: object)
-		}
-	}
-	
-	func reactToTouchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-		if virtualObjects.isEmpty {
-			return
-		}
-		currentGesture = currentGesture?.updateGestureFromTouches(touches, .touchEnded)
-		if let newObject = currentGesture?.lastUsedObject {
-			lastUsedObject = newObject
-		}
-		
-		if let gesture = currentGesture, let object = gesture.lastUsedObject {
-			delegate?.virtualObjectManager(self, transformDidChangeFor: object)
-		}
-	}
-	
-	func reactToTouchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-		if virtualObjects.isEmpty {
-			return
-		}
-		currentGesture = currentGesture?.updateGestureFromTouches(touches, .touchCancelled)
-	}
-	
+
 	// MARK: - Update object position
 	
 	func translate(_ object: VirtualObject, in sceneView: ARSCNView, basedOn screenPos: CGPoint, instantly: Bool, infinitePlane: Bool) {
@@ -316,7 +258,7 @@ class VirtualObjectManager {
                 }
             }
             if worldCoordinatesForPlaneHit != nil {
-                print("Found the point on the plane", worldCoordinatesForPlaneHit)
+                print("Found the point on the plane", worldCoordinatesForPlaneHit!)
                 return (worldCoordinatesForPlaneHit, planeAnchorForPlaneHit, true)
             }
 

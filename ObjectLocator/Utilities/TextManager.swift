@@ -28,8 +28,6 @@ extension ARCamera.TrackingState {
                 return "TRACKING LIMITED\nToo much camera movement"
             case .insufficientFeatures:
                 return "TRACKING LIMITED\nNot enough surface detail"
-            case .none:
-                fatalError("should be unreachable")
             case .initializing:
                 return "Initializing AR Session"
             }
@@ -177,8 +175,6 @@ class TextManager {
 				switch reason {
 				case .excessiveMotion: message += "Try slowing down your movement, or reset the session."
 				case .insufficientFeatures: message += "Try pointing at a flat surface, or reset the session."
-                case .none:
-                    fatalError("should be unreachable")
                 case .initializing:
                     message += "Initializing AR Session"
                 }
