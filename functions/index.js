@@ -35,8 +35,7 @@ exports.cleanupOldDataCron = functions.pubsub.topic('hourly-tick').onPublish((ev
 		 reads.push(promise);
 	    });
 	    return Promise.all(reads);
-     	})
-        .catch(function (error) {
+     	}).catch(function (error) {
 	    console.log(error);
 	});
 });
@@ -98,8 +97,10 @@ exports.sendNotification = functions.database.ref('labeling_jobs/{jobUUID}')
 		   promises.push(promise)
 	       });
 	       return Promise.all(promises);
-           })
-           .catch(function (error) {
+           }).then(() => {
+	      // workaround related to this problem: https://stackoverflow.com/questions/44790496/cloud-functions-for-firebase-error-serializing-return-value
+	      return;
+    	   }).catch(function (error) {
 	       console.log(error);
            });
     });
