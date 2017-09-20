@@ -31,6 +31,11 @@ public struct CurrentCoordinateInfo {
     }
 }
 
+public struct JobInfo {
+    var arFrame: ARFrame
+    var sceneImage : UIImage
+}
+
 public struct LocationInfo {
     //  Struct to store position information and yaw
     public var x: Float
@@ -52,8 +57,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
         if error != nil {
             //Problem signing in
             login()
-        }else {
-            //User is in! Here is where we code after signing in
+        } else {
+            // successfully logged in
         }
     }
     
@@ -99,6 +104,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
     var db: Database?
     var storageRef : StorageReference?
     var observers = [DatabaseReference?]()
+    var jobs = [String: JobInfo]()
     
     // MARK: - UI Elements
     
@@ -116,6 +122,55 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
 	// Create instance variable for more readable access inside class
 	let serialQueue: DispatchQueue = ViewController.serialQueue
 	
+    func handleResponse(snapshot: DataSnapshot) {
+        print("handling response")
+        guard let job = jobs[snapshot.key] else {
+            return
+        }
+        var objectPixelLocation: CGPoint? = nil
+        // TODO average this
+        
+        for child in snapshot.children.allObjects as! [DataSnapshot] {
+            let values = child.value as! [String: Any]
+            objectPixelLocation = CGPoint(x:Double(self.sceneView.bounds.width)*(values["x"] as! Double)/Double(job.sceneImage.size.width), y:Double(self.sceneView.bounds.height)*(values["y"] as! Double)/Double(job.sceneImage.size.height))
+        }
+        guard objectPixelLocation != nil else {
+            return
+        }
+        // kill the job... so we don't add it twice
+        // TODO: may want to update when we get new data
+        jobs[snapshot.key] = nil
+
+        // always use index 0 for our virtual object
+        let definition = VirtualObjectManager.availableObjects[0]
+        let object = VirtualObject(definition: definition)
+        let (worldPos, _, _) = self.virtualObjectManager.worldPositionFromScreenPosition(objectPixelLocation!,
+                                                                                         in: self.sceneView,
+                                                                                         in_img: job.arFrame,
+                                                                                         objectPos: nil)
+        if worldPos == nil {
+            // TODO: should print debug info
+            return
+        }
+        self.virtualObjectManager.loadVirtualObject(object, to: worldPos!, cameraTransform: job.arFrame.camera.transform)
+        if object.parent == nil {
+            self.serialQueue.async {
+                self.sceneView.scene.rootNode.addChildNode(object)
+            }
+        }
+    }
+    
+    func setupObservers() {
+        let responsePathRef = Database.database().reference(withPath: "responses/" + auth!.currentUser!.uid)
+        responsePathRef.observe(.childChanged) { (snapshot) -> Void in
+            self.handleResponse(snapshot: snapshot)
+        }
+        responsePathRef.observe(.childAdded) { (snapshot) -> Void in
+            self.handleResponse(snapshot: snapshot)
+        }
+        observers.append(responsePathRef)
+    }
+    
     // MARK: - View Controller Life Cycle
     
     override func viewDidLoad() {
@@ -132,9 +187,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
     }
     
     @IBAction func handleLogout(_ sender: Any) {
-        // kill all observers
+        // kill all observers and remove any old jobs
         _ = observers.map { $0?.removeAllObservers() }
         observers = [DatabaseReference?]()
+        jobs = [String: JobInfo]()
         try! Auth.auth().signOut()
     }
     
@@ -143,7 +199,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
             if user != nil {
                 // User is signed in.
             } else {
-                // No user is signed in.
+                // No user is signed in
                 self.login()
             }
         }
@@ -164,7 +220,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
 		if ARWorldTrackingConfiguration.isSupported {
 			// Start the ARSession.
 			resetTracking()
-		} else {
+        } else {
 			// This device does not support 6DOF world tracking.
 			let sessionErrorMsg = "This app requires world tracking. World tracking is only available on iOS devices with A9 processor or newer. " +
 			"Please quit the application."
@@ -380,8 +436,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
     }
 	
 	func resetTracking() {
-        // get rid of any observers we're waiting on
+        // get rid of any observers and jobs we're waiting on
         _ = observers.map { $0?.removeAllObservers() }
+        jobs = [String: JobInfo]()
+
 		session.run(standardConfiguration, options: [.resetTracking, .removeExistingAnchors])
 		
 		// reset timer
@@ -389,7 +447,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
 			trackingFallbackTimer!.invalidate()
 			trackingFallbackTimer = nil
 		}
-		
+        
+        setupObservers()
 		textManager.scheduleMessage("FIND A SURFACE TO PLACE AN OBJECT",
 		                            inSeconds: 7.5,
 		                            messageType: .planeEstimation)

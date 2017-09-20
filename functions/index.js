@@ -27,7 +27,8 @@ exports.cleanupOldDataCron = functions.pubsub.topic('hourly-tick').onPublish((ev
 				deletions.push(admin.database().ref(subChild.val()).remove().catch(function(error) {}))
 			});
 			deletions.push(bucket.file(child.key + '.jpg').delete().catch(function(error) {}))
-			deletions.push(admin.database().ref('responses/' + child.key).remove().catch(function(error) {}))
+			console.log('responses/' + child.child("requesting_user").val() + "/" + child.key)
+			deletions.push(admin.database().ref('responses/' + child.child("requesting_user").val() + "/" + child.key).remove().catch(function(error) {}))
 			deletions.push(admin.database().ref('labeling_jobs/' + child.key).remove().catch(function(error) {}))
 			return deletions;
 		 });
@@ -76,26 +77,25 @@ exports.sendNotification = functions.database.ref('labeling_jobs/{jobUUID}')
 		           if (child2.key != "priority" && child2.key != "assignments" && !notifiedTokens.has(child2.key)) {
 			       // not sure if this works across the various asynchronous threads
 		               notifiedTokens.add(child2.key)
-			       var notificationPromise = admin.messaging().sendToDevice(child2.key, payload).then(function (response) {
+			       var promise = admin.messaging().sendToDevice(child2.key, payload).then(function (response) {
 				   var writePromises = [];
 			           if (!addedAssignment) {
 			               // TODO: write all assignments to the labeling_jobs/jobUUID as a list of references
-				       writePromises.push(subRef.child("assignments").update({[event.params.jobUUID]: {"object_to_find": event.data.val()["object_to_find"], "creation_timestamp": event.data.val()["creation_timestamp"]}}))
-				       assignmentPaths.push("notification_tokens/" + child.key + "/assignments/" + event.params.jobUUID)
+				       writePromises.push(subRef.child("assignments").update({[event.params.jobUUID]: {"object_to_find": event.data.val()["object_to_find"], "requesting_user": event.data.val()["requesting_user"], "creation_timestamp": event.data.val()["creation_timestamp"]}}))
 				       // not sure if this works properly across multiple promises (we write it over and over... can't be resequenced)
-				       writePromises.push(admin.database().ref('labeling_jobs/' + event.params.jobUUID).update({'assignmentPaths': assignmentPaths}))
+				       writePromises.push(admin.database().ref('labeling_jobs/' + event.params.jobUUID + "/assignmentPaths").update({[child.key]: "notification_tokens/" + child.key + "/assignments/" + event.params.jobUUID}))
 				       addedAssignment = true;
 				   }
 				   return Promise.all(writePromises);
 			    	}).catch(function (error) {
 				    console.log("Error sending message:", error);
 			        });
-			        userPromises.push(notificationPromise);
+			        userPromises.push(promise)
 			    }
 		       });
 		       return Promise.all(userPromises);
 	           });
-		   promises.push(promise);
+		   promises.push(promise)
 	       });
 	       return Promise.all(promises);
            })
