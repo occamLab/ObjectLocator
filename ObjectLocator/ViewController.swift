@@ -16,44 +16,6 @@ import FirebaseAuthUI
 import FirebasePhoneAuthUI
 import Speech
 
-
-// TODO: move this to its own file
-public struct CurrentCoordinateInfo {
-    //  Struct to store location and transform information
-    public var location: LocationInfo
-    public var transformMatrix: Matrix3 = Matrix3.identity
-    
-    public init(_ location: LocationInfo, transMatrix: Matrix3) {
-        self.location = location
-        self.transformMatrix = transMatrix
-    }
-    
-    public init(_ location: LocationInfo) {
-        self.location = location
-    }
-}
-
-public struct JobInfo {
-    var arFrames: [String: ARFrame]
-    var sceneImage : UIImage        // Used for dimension checking... TODO: Just store bounds
-    var objectToFind: String
-}
-
-public struct LocationInfo {
-    //  Struct to store position information and yaw
-    public var x: Float
-    public var y: Float
-    public var z: Float
-    public var yaw: Float
-    
-    public init(x: Float, y: Float, z: Float, yaw: Float) {
-        self.x = x
-        self.y = y
-        self.z = z
-        self.yaw = yaw
-    }
-}
-
 class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSpeechRecognizerDelegate, AVSpeechSynthesizerDelegate {
 
     func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?) {
@@ -90,6 +52,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
     private let audioEngine = AVAudioEngine()
     var isReadingAnnouncement = false
     var shouldResumeVoiceRecognition = false
+    // this is to workaround a bug where VoiceOver will fail when turned on during speech recognition
+    var startedVoiceOverDuringSpeechRecognition = false
     // MARK: - Virtual Object Manipulation Properties
     var currentJobUUID: String?
     var dragOnInfinitePlanesEnabled = false
@@ -149,7 +113,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
         var objectPixelLocation: CGPoint?
         var labeledImageUUID: String?
 
-        // TODO average this
+        // TODO take the area with high local density of responses
         for child in snapshot.children.allObjects as! [DataSnapshot] {
             let values = child.value as! [String: Any]
             objectPixelLocation = CGPoint(x:Double(self.sceneView.bounds.width)*(values["x"] as! Double)/Double(job.sceneImage.size.width), y:Double(self.sceneView.bounds.height)*(values["y"] as! Double)/Double(job.sceneImage.size.height))
@@ -160,11 +124,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
         }
         let objectToFind = jobs[snapshot.key]!.objectToFind
         // kill the job... so we don't add it twice
-        // TODO: may want to update when we get new data
+        // TODO: may want to update position when we get new data
         jobs[snapshot.key] = nil
 
-        // always use index 0 for our virtual object
-        let definition = VirtualObjectManager.availableObjects[0]
         let object = VirtualObject(objectToFind: objectToFind)
         let (worldPos, _, _) = self.virtualObjectManager.worldPositionFromScreenPosition(objectPixelLocation!,
                                                                                          in: self.sceneView,
@@ -385,6 +347,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
     }
     
     func announce(announcement: String, overrideRestartVoiceOver: Bool = false, overrideStartVoiceOverValue: Bool = false) {
+        print("isReadingAnnouncement", isReadingAnnouncement, "synth.isSpeaking", synth.isSpeaking, "UIAccessibilityIsVoiceOverRunning()", UIAccessibilityIsVoiceOverRunning())
+
         if isReadingAnnouncement || synth.isSpeaking {
             return
         }
@@ -402,9 +366,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
             cleanupVoiceRecognition()
         }
         if UIAccessibilityIsVoiceOverRunning() {
-            // use the Voice over API instead of text to speech
-            print("Notifying via VoiceOver", announcement)
-            UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement)
+            // use the VoiceOver API instead of text to speech
+            if startedVoiceOverDuringSpeechRecognition {
+                // Due to a bug that doesn't let VoiceOver properly setup when in record mode, we have to just give up here and avoid announcing anything.  Things will start working once the user activates an accessibility element
+                isReadingAnnouncement = false
+            } else {
+                UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement)
+            }
         } else {
             let audioSession = AVAudioSession.sharedInstance()
             do {
@@ -473,6 +441,22 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
                 try! self.startRecording()
             }
         }
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.UIAccessibilityVoiceOverStatusDidChange, object: nil, queue: nil) { (notification) -> Void in
+            if self.recognitionTask != nil && UIAccessibilityIsVoiceOverRunning() {
+                print("SETTING FLAG")
+                self.startedVoiceOverDuringSpeechRecognition = true
+            }
+        }
+        
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.UIAccessibilityElementFocused, object: nil, queue: nil) { (notification) -> Void in
+            // if an element is focused during playback mode, then we have sucessfully
+            // worked around a bug that prevents VoiceOver from properly starting up
+            // if it is activated during a voice recognition.
+            if AVAudioSession.sharedInstance().category == AVAudioSessionCategoryPlayback && AVAudioSession.sharedInstance().mode == AVAudioSessionModeDefault {
+                self.startedVoiceOverDuringSpeechRecognition = false
+            }
+        }
+        
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
@@ -624,7 +608,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
         let inputNode = audioEngine.inputNode
         inputNode.removeTap(onBus: 0)
         audioEngine.stop()
-        try! AVAudioSession.sharedInstance().setActive(false)
+        
+        try! AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+        try! AVAudioSession.sharedInstance().setMode(AVAudioSessionModeDefault)
 
         recognitionRequest = nil
         recognitionTask = nil

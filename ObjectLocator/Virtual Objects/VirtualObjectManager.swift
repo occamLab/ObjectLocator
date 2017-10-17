@@ -70,43 +70,9 @@ class VirtualObjectManager {
 			ViewController.serialQueue.async {
 				self.setNewVirtualObjectPosition(object, to: position, cameraTransform: cameraTransform)
 				self.lastUsedObject = object
-				
+                
 				self.delegate?.virtualObjectManager(self, didLoad: object)
 			}
-		}
-	}
-
-	// MARK: - Update object position
-	
-	func translate(_ object: VirtualObject, in sceneView: ARSCNView, basedOn screenPos: CGPoint, instantly: Bool, infinitePlane: Bool) {
-		
-		DispatchQueue.main.async {
-            let result = self.worldPositionFromScreenPosition(screenPos, in: sceneView, in_img: nil, objectPos: object.simdPosition, infinitePlane: infinitePlane)
-			
-			guard let newPosition = result.position else {
-				self.delegate?.virtualObjectManager(self, couldNotPlace: object)
-				return
-			}
-			
-			guard let cameraTransform = sceneView.session.currentFrame?.camera.transform else {
-				return
-			}
-			
-			ViewController.serialQueue.async {
-				self.setPosition(for: object,
-									  position: newPosition,
-				                      instantly: instantly,
-				                      filterPosition: !result.hitAPlane,
-				                      cameraTransform: cameraTransform)
-			}
-		}
-	}
-	
-	func setPosition(for object: VirtualObject, position: float3, instantly: Bool, filterPosition: Bool, cameraTransform: matrix_float4x4) {
-		if instantly {
-			setNewVirtualObjectPosition(object, to: position, cameraTransform: cameraTransform)
-		} else {
-			updateVirtualObjectPosition(object, to: position, filterPosition: filterPosition, cameraTransform: cameraTransform)
 		}
 	}
 	
@@ -133,7 +99,6 @@ class VirtualObjectManager {
             cameraToPosition *= 10
         }
 
-		let hitTestResultDistance = simd_length(cameraToPosition)
         object.simdPosition = cameraWorldPos + cameraToPosition
 	}
 	
