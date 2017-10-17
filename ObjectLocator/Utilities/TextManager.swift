@@ -66,6 +66,8 @@ class TextManager {
 	
 	func showMessage(_ text: String, autoHide: Bool = true) {
 		DispatchQueue.main.async {
+            // TODO: post to VoiceOver
+            
 			// cancel any previous hide timer
 			self.messageHideTimer?.invalidate()
 			

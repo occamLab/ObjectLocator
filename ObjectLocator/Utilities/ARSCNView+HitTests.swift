@@ -59,7 +59,6 @@ extension ARFrame {
             
             let originToFeatureNormalized = simd_normalize(originToFeature)
             let angleBetweenRayAndFeature = acos(simd_dot(ray.direction, originToFeatureNormalized))
-            print("angleBetweenRayAndFeature", angleBetweenRayAndFeature)
             if angleBetweenRayAndFeature > maxAngle {
                 // Skip this feature - is is outside of the hit test cone.
                 continue

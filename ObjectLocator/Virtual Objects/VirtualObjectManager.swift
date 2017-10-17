@@ -46,20 +46,8 @@ class VirtualObjectManager {
         planes = planes.filter { $0.anchor != anchor }
     }
     
-	func removeVirtualObject(at index: Int) {
-		let definition = VirtualObjectManager.availableObjects[index]
-        guard let object = virtualObjects.first(where: { $0.definition == definition })
-            else { return }
-        
-		unloadVirtualObject(object)
-		if let pos = virtualObjects.index(of: object) {
-			virtualObjects.remove(at: pos)
-		}
-	}
-	
 	private func unloadVirtualObject(_ object: VirtualObject) {
 		ViewController.serialQueue.async {
-			object.unloadModel()
 			object.removeFromParentNode()
 			if self.lastUsedObject == object {
 				self.lastUsedObject = nil
@@ -78,8 +66,6 @@ class VirtualObjectManager {
 		
 		// Load the content asynchronously.
 		DispatchQueue.global().async {
-			object.loadModel()
-			
 			// Immediately place the object in 3D space.
 			ViewController.serialQueue.async {
 				self.setNewVirtualObjectPosition(object, to: position, cameraTransform: cameraTransform)
@@ -135,7 +121,6 @@ class VirtualObjectManager {
         }
 
 		object.simdPosition = cameraWorldPos + cameraToPosition
-		object.recentVirtualObjectDistances.removeAll()
 	}
 	
 	private func updateVirtualObjectPosition(_ object: VirtualObject, to pos: float3, filterPosition: Bool, cameraTransform: matrix_float4x4) {
@@ -148,22 +133,8 @@ class VirtualObjectManager {
             cameraToPosition *= 10
         }
 
-		// Compute the average distance of the object from the camera over the last ten
-		// updates. If filterPosition is true, compute a new position for the object
-		// with this average. Notice that the distance is applied to the vector from
-		// the camera to the content, so it only affects the percieved distance of the
-		// object - the averaging does _not_ make the content "lag".
 		let hitTestResultDistance = simd_length(cameraToPosition)
-		
-		object.recentVirtualObjectDistances.append(hitTestResultDistance)
-		object.recentVirtualObjectDistances.keepLast(10)
-		
-		if filterPosition, let averageDistance = object.recentVirtualObjectDistances.average {
-			let averagedDistancePos = cameraWorldPos + simd_normalize(cameraToPosition) * averageDistance
-			object.simdPosition = averagedDistancePos
-		} else {
-			object.simdPosition = cameraWorldPos + cameraToPosition
-		}
+        object.simdPosition = cameraWorldPos + cameraToPosition
 	}
 	
 	func checkIfObjectShouldMoveOntoPlane(anchor: ARPlaneAnchor, planeAnchorNode: SCNNode) {

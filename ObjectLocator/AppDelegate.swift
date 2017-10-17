@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let sourceApplication = options[UIApplicationOpenURLOptionsKey.sourceApplication] as! String?
         return self.handleOpenUrl(url, sourceApplication: sourceApplication)
     }
-    
+
     @available(iOS 8.0, *)
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
         return self.handleOpenUrl(url, sourceApplication: sourceApplication)

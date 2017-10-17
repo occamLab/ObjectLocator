@@ -20,7 +20,15 @@ extension ViewController: UIPopoverPresentationControllerDelegate {
     @IBAction func chooseObject(_ button: UIButton) {
         // Abort if we are about to load another object to avoid concurrent modifications of the scene.
         if isLoadingObject { return }
-        
+        if useSpeechRecognizer && speechRecognitionAuthorized {
+            let startVoiceRecognitionTask = DispatchWorkItem {
+                self.announce(announcement: "Starting voice recognition", overrideRestartVoiceOver: true, overrideStartVoiceOverValue: true)
+            }
+            // wait for a little bit for voice over to complete
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1, execute: startVoiceRecognitionTask)
+            return
+        }
+
         textManager.cancelScheduledMessage(forType: .contentPlacement)
         performSegue(withIdentifier: SegueIdentifier.showObjects.rawValue, sender: button)
     }

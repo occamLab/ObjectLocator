@@ -29,44 +29,40 @@ struct VirtualObjectDefinition: Codable, Equatable {
     }
 }
 
-class VirtualObject: SCNNode, ReactsToScale {
-    let definition: VirtualObjectDefinition
-    let referenceNode: SCNReferenceNode
+class VirtualObject: SCNNode {
+    let objectToFind: String
+    let cubeNode: SCNNode
     
-    init(definition: VirtualObjectDefinition) {
-        self.definition = definition
-        guard let url = Bundle.main.url(forResource: "Models.scnassets/\(definition.modelName)/\(definition.modelName)", withExtension: "scn")
-            else { fatalError("can't find expected virtual object bundle resources") }
-        guard let node = SCNReferenceNode(url: url)
-            else { fatalError("can't find expected virtual object bundle resources") }
-        referenceNode = node
+    init(objectToFind: String) {
+        self.objectToFind = objectToFind
+        
+        cubeNode = SCNNode(geometry: SCNBox(width: 0.05, height: 0.05, length: 0.05, chamferRadius: 0))
+        cubeNode.position = SCNVector3(0, 0, 0.0)
+        
         super.init()
-        self.addChildNode(node)
+        
+        self.addChildNode(cubeNode)
+        let objectText = SCNText(string: objectToFind, extrusionDepth: 1.0)
+        objectText.font = UIFont (name: "Arial", size: 48)
+        objectText.firstMaterial!.diffuse.contents = UIColor.green
+        let textNode = SCNNode(geometry: objectText)
+        textNode.position = SCNVector3(x: 0.0, y: 0.15, z: 0.0)
+        textNode.scale = SCNVector3(x: 0.002, y: 0.002, z: 0.002)
+        cubeNode.addChildNode(textNode)
+        center(node: textNode)
     }
+    
+    func center(node: SCNNode) {
+        let (min, max) = node.boundingBox
+        
+        let dx = min.x + 0.5 * (max.x - min.x)
+        let dy = min.y + 0.5 * (max.y - min.y)
+        let dz = min.z + 0.5 * (max.z - min.z)
+        node.pivot = SCNMatrix4MakeTranslation(dx, dy, dz)
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    func loadModel() {
-        referenceNode.load()
-    }
-    func unloadModel() {
-        referenceNode.unload()
-    }
-    var modelLoaded: Bool {
-        return referenceNode.isLoaded
-    }
-    
-    // Use average of recent virtual object distances to avoid rapid changes in object scale.
-    var recentVirtualObjectDistances = [Float]()
-    
-    func reactToScale() {
-        for (nodeName, particleSize) in definition.particleScaleInfo {
-            guard let node = self.childNode(withName: nodeName, recursively: true), let particleSystem = node.particleSystems?.first
-                else { continue }
-            particleSystem.reset()
-            particleSystem.particleSize = CGFloat(scale.x * particleSize)
-        }
     }
 }
 

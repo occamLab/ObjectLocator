@@ -18,23 +18,37 @@ const bucket = gcs.bucket(bucketName);
 exports.cleanupOldDataCron = functions.pubsub.topic('hourly-tick').onPublish((event) => {
     return admin.database().ref('labeling_jobs').orderByChild('creation_timestamp').endAt((new Date).getTime()-120*1000).once('value')
 	.then(function(snapshot) {
-	    var reads = [];
-
+	    var jobOperations = [];
 	    snapshot.forEach(function(child) {
-	    	 var promise = admin.database().ref('labeling_jobs/' + child.key + '/assignmentPaths').once('value').then(function(childSnapshot) {
-	    		var deletions = [];
+	    	var promise1 = admin.database().ref('labeling_jobs/' + child.key + '/additional_images').once('value').then(function(childSnapshot) {
+	    		var imageCleanup = [];
 	   		childSnapshot.forEach(function(subChild) {
-				deletions.push(admin.database().ref(subChild.val()).remove().catch(function(error) {}))
+				console.log('deleting image' + subChild.key)
+				imageCleanup.push(bucket.file(subChild.key + '.jpg').delete().catch(function(error) {}))
 			});
-			deletions.push(bucket.file(child.key + '.jpg').delete().catch(function(error) {}))
-			console.log('responses/' + child.child("requesting_user").val() + "/" + child.key)
-			deletions.push(admin.database().ref('responses/' + child.child("requesting_user").val() + "/" + child.key).remove().catch(function(error) {}))
-			deletions.push(admin.database().ref('labeling_jobs/' + child.key).remove().catch(function(error) {}))
-			return deletions;
+			return imageCleanup;
 		 });
-		 reads.push(promise);
+	    	 var promise2 = admin.database().ref('labeling_jobs/' + child.key + '/assignmentPaths').once('value').then(function(childSnapshot) {
+	    		var assignmentCleanup = [];
+	   		childSnapshot.forEach(function(subChild) {
+				console.log(subChild.val())
+				assignmentCleanup.push(admin.database().ref(subChild.val()).remove().catch(function(error) {}))
+			});
+			return assignmentCleanup;
+		 });
+		 jobOperations.push(promise1);
+		 jobOperations.push(promise2);
+		 jobOperations.push(bucket.file(child.key + '.jpg').delete().catch(function(error) { console.log(error) }))
+		 jobOperations.push(admin.database().ref('responses/' + child.child("requesting_user").val() + "/" + child.key).remove().catch(function(error) { }))
 	    });
-	    return Promise.all(reads);
+	    return Promise.all(jobOperations).then(() => {
+	        // ensure we don't delete data that is important for cleanup before it is read
+	        var finalOperations = []
+	        snapshot.forEach(function(child) {
+ 	           finalOperations.push(admin.database().ref('labeling_jobs/' + child.key).remove().catch(function(error) { }))
+	        });
+	        return Promise.all(finalOperations);
+	    });
      	}).catch(function (error) {
 	    console.log(error);
 	});

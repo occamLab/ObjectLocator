@@ -42,48 +42,13 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, VirtualO
         textManager.showMessage("CANNOT PLACE OBJECT\nTry moving left or right.")
     }
     
-    
-    func pixelBufferToUIImage(pixelBuffer: CVPixelBuffer) -> UIImage {
-        let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-        let context = CIContext(options: nil)
-        let cgImage = context.createCGImage(ciImage, from: ciImage.extent)
-        let uiImage = UIImage(cgImage: cgImage!)
-        return uiImage
-    }
-    
     // MARK: - VirtualObjectSelectionViewControllerDelegate
 
     func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didSelectObjectAt index: Int, objectToFind: String!) {
-        guard (session.currentFrame?.camera.transform) != nil else {
-            return
-        }
-
-        { [frameCopy = self.session.currentFrame, sceneImage = self.sceneView.snapshot()] in
-            let imageData:Data? = UIImageJPEGRepresentation(sceneImage, 0.8)!
-            let parameters: NSDictionary = [
-                "object_to_find": objectToFind,
-                "creation_timestamp": ServerValue.timestamp(),
-                "requesting_user": self.auth!.currentUser!.uid
-            ]
-            // dispatch to the backend for labeling
-            let jobUUID = UUID().uuidString
-            let imageRef = self.storageRef?.child(jobUUID + ".jpg")
-            let metaData = StorageMetadata()
-            metaData.contentType = "image/jpg"
-            imageRef?.putData(imageData!, metadata: metaData) { (metadata, error) in
-                guard metadata != nil else {
-                    // Uh-oh, an error occurred!
-                    return
-                }
-                let dbPath = "labeling_jobs/" + jobUUID
-                self.db?.reference(withPath: dbPath).setValue(parameters)
-                self.jobs[jobUUID] = JobInfo(arFrame: frameCopy!, sceneImage: sceneImage)
-            }
-        }()
+        postNewJob(objectToFind: objectToFind)
     }
-    
+
     func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didDeselectObjectAt index: Int) {
-        virtualObjectManager.removeVirtualObject(at: index)
     }
     
 }

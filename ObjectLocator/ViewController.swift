@@ -14,6 +14,8 @@ import Firebase
 import FirebaseAuth
 import FirebaseAuthUI
 import FirebasePhoneAuthUI
+import Speech
+
 
 // TODO: move this to its own file
 public struct CurrentCoordinateInfo {
@@ -32,8 +34,9 @@ public struct CurrentCoordinateInfo {
 }
 
 public struct JobInfo {
-    var arFrame: ARFrame
-    var sceneImage : UIImage
+    var arFrames: [String: ARFrame]
+    var sceneImage : UIImage        // Used for dimension checking... TODO: Just store bounds
+    var objectToFind: String
 }
 
 public struct LocationInfo {
@@ -51,7 +54,7 @@ public struct LocationInfo {
     }
 }
 
-class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
+class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSpeechRecognizerDelegate, AVSpeechSynthesizerDelegate {
 
     func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?) {
         if error != nil {
@@ -64,6 +67,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
     
     // MARK: - ARKit Config Properties
     
+    @IBOutlet weak var feedbackMode: UISwitch!
     var screenCenter: CGPoint?
     var trackingFallbackTimer: Timer?
     let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
@@ -77,13 +81,22 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
         return configuration
     }()
     
+    let useSpeechRecognizer = true
+    // used when VoiceOver is not active
+    let synth = AVSpeechSynthesizer()
+    private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))!
+    private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
+    private var recognitionTask: SFSpeechRecognitionTask?
+    private let audioEngine = AVAudioEngine()
+    var isReadingAnnouncement = false
+    var shouldResumeVoiceRecognition = false
     // MARK: - Virtual Object Manipulation Properties
-    
+    var currentJobUUID: String?
     var dragOnInfinitePlanesEnabled = false
     var virtualObjectManager: VirtualObjectManager!
     
     var hapticTimer: Timer!
-    
+
     var isLoadingObject: Bool = false {
         didSet {
             DispatchQueue.main.async {
@@ -97,15 +110,22 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
     
     var textManager: TextManager!
     var restartExperienceButtonIsEnabled = true
+    @IBOutlet weak var snapshotButton: UIButton!
     
     // MARK: - FireBase handles
     var auth: Auth?
     var authUI: FUIAuth?
     var db: Database?
+    var speechRecognitionAuthorized = false
     var storageRef : StorageReference?
     var observers = [DatabaseReference?]()
     var jobs = [String: JobInfo]()
-    
+    var imageSequenceNumber = 0        // this is global for a session (not for a job)
+    let uploadQueue = DispatchQueue(label: "edu.occamlab.objectlocatoruploadqueue", qos: DispatchQoS.userInitiated)
+    let newTaskQueue = DispatchQueue(label: "edu.occamlab.newtaskqueue", qos: DispatchQoS.userInitiated)
+    let uploadSemaphore = DispatchSemaphore(value: 1)
+    let newTaskSemaphore = DispatchSemaphore(value: 1)
+
     // MARK: - UI Elements
     
     var spinner: UIActivityIndicatorView?
@@ -123,36 +143,38 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
 	let serialQueue: DispatchQueue = ViewController.serialQueue
 	
     func handleResponse(snapshot: DataSnapshot) {
-        print("handling response")
         guard let job = jobs[snapshot.key] else {
             return
         }
-        var objectPixelLocation: CGPoint? = nil
+        var objectPixelLocation: CGPoint?
+        var labeledImageUUID: String?
+
         // TODO average this
-        
         for child in snapshot.children.allObjects as! [DataSnapshot] {
             let values = child.value as! [String: Any]
             objectPixelLocation = CGPoint(x:Double(self.sceneView.bounds.width)*(values["x"] as! Double)/Double(job.sceneImage.size.width), y:Double(self.sceneView.bounds.height)*(values["y"] as! Double)/Double(job.sceneImage.size.height))
+            labeledImageUUID = values["imageUUID"] as? String
         }
         guard objectPixelLocation != nil else {
             return
         }
+        let objectToFind = jobs[snapshot.key]!.objectToFind
         // kill the job... so we don't add it twice
         // TODO: may want to update when we get new data
         jobs[snapshot.key] = nil
 
         // always use index 0 for our virtual object
         let definition = VirtualObjectManager.availableObjects[0]
-        let object = VirtualObject(definition: definition)
+        let object = VirtualObject(objectToFind: objectToFind)
         let (worldPos, _, _) = self.virtualObjectManager.worldPositionFromScreenPosition(objectPixelLocation!,
                                                                                          in: self.sceneView,
-                                                                                         in_img: job.arFrame,
+                                                                                         in_img: job.arFrames[labeledImageUUID!],
                                                                                          objectPos: nil)
         if worldPos == nil {
             // TODO: should print debug info
             return
         }
-        self.virtualObjectManager.loadVirtualObject(object, to: worldPos!, cameraTransform: job.arFrame.camera.transform)
+        self.virtualObjectManager.loadVirtualObject(object, to: worldPos!, cameraTransform: job.arFrames[snapshot.key]!.camera.transform)
         if object.parent == nil {
             self.serialQueue.async {
                 self.sceneView.scene.rootNode.addChildNode(object)
@@ -184,6 +206,163 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
         setupScene()
         feedbackTimer = Date()
         hapticTimer = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: (#selector(getHapticFeedback)), userInfo: nil, repeats: true)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(applicationDidBecomeActive(_:)),
+            name: NSNotification.Name.UIApplicationDidBecomeActive,
+            object: nil)
+    }
+    
+    @objc func applicationDidBecomeActive(_ notification: NSNotification) {
+        // make sure we reset this state when app is resumed
+        isReadingAnnouncement = false
+        cleanupVoiceRecognition()
+    }
+
+    public func startRecording() throws {
+        if recognitionTask != nil {
+            // can't run this twice in a row... TODO: consider disabling button
+            return
+        }
+        if isReadingAnnouncement {
+            // wait until announcement is finished
+            shouldResumeVoiceRecognition = true
+            return
+        }
+        let audioSession = AVAudioSession.sharedInstance()
+        try audioSession.setCategory(AVAudioSessionCategoryRecord)
+        try audioSession.setMode(AVAudioSessionModeMeasurement)
+        try audioSession.setActive(true, with: .notifyOthersOnDeactivation)
+        let inputNode = audioEngine.inputNode
+        recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
+        guard let recognitionRequest = recognitionRequest else { fatalError("Unable to created a SFSpeechAudioBufferRecognitionRequest object") }
+        
+        // Configure request so that results are returned before audio recording is finished
+        recognitionRequest.shouldReportPartialResults = true
+        var segmentsProcessed = 0
+        var pendingRequest = [String]()
+        var jobPostingTask: DispatchWorkItem?
+
+        // A recognition task represents a speech recognition session.
+        // We keep a reference to the task so that it can be cancelled.
+        recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { result, error in
+            var isFinal = false
+
+            if let result = result {
+                isFinal = result.isFinal
+                if !isFinal {
+                    for (idx, segment) in result.bestTranscription.segments[segmentsProcessed...].enumerated() {
+                        if segment.substring.caseInsensitiveCompare("snap") == ComparisonResult.orderedSame && segment.confidence > 0 {
+                            segmentsProcessed = idx + segmentsProcessed + 1
+                            if self.snapshotButton.isEnabled {
+                                self.handleSnapshot(self.snapshotButton)
+                            }
+                        }
+
+                        if segment.substring.caseInsensitiveCompare("stop") == ComparisonResult.orderedSame && segment.confidence > 0 {
+                            // bail and make sure we don't restart voice recognition accidentally
+                            self.shouldResumeVoiceRecognition = false
+                            isFinal = true
+                        }
+
+                        if segment.substring.caseInsensitiveCompare("find") == ComparisonResult.orderedSame {
+                            var firstUnconfident = result.bestTranscription.segments[(idx + segmentsProcessed + 1)...].index(where: {$0.confidence == 0})
+                            var allowableWords: [String]
+                            if firstUnconfident == nil {
+                                allowableWords = result.bestTranscription.segments[(idx + segmentsProcessed + 1)...].map({$0.substring})
+                                firstUnconfident = result.bestTranscription.segments.count - 1
+                            } else {
+                                allowableWords = result.bestTranscription.segments[(idx + segmentsProcessed + 1)...(firstUnconfident!)].map({$0.substring})
+                            }
+                            self.newTaskQueue.async {
+                                self.newTaskSemaphore.wait()
+
+                                if allowableWords.count > pendingRequest.count {
+                                    // if the task was already pending, get rid of it
+                                    if jobPostingTask != nil {
+                                        jobPostingTask!.cancel()
+                                    }
+                                    pendingRequest = allowableWords
+                                    jobPostingTask = DispatchWorkItem {
+                                        let jobText = allowableWords.joined(separator:" ")
+                                        pendingRequest = []
+                                        segmentsProcessed = firstUnconfident!
+                                        print("POSTING A JOB", jobText)
+                                        self.postNewJob(objectToFind: jobText)
+                                        self.announce(announcement: "Finding " + jobText)
+                                    }
+                                    // wait to see if more words come in
+                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0, execute: jobPostingTask!)
+                                }
+                                self.newTaskSemaphore.signal()
+                            }
+                        }
+                    }
+                }
+            }
+            if error != nil || isFinal {
+                // If we aren't planning on resuming voice recognition, then we got here due to an error, timeout, or stop request
+                if !self.shouldResumeVoiceRecognition {
+                    self.announce(announcement: "Voice recognition stopped.", overrideRestartVoiceOver: true, overrideStartVoiceOverValue: false)
+                }
+            }
+        }
+        let recordingFormat = inputNode.outputFormat(forBus: 0)
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer: AVAudioPCMBuffer, when: AVAudioTime) in
+            self.recognitionRequest?.append(buffer)
+        }
+        audioEngine.prepare()
+        try audioEngine.start()
+    }
+    
+    // MARK: SFSpeechRecognizerDelegate
+    
+    public func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {
+        if available {
+            speechRecognitionAuthorized = true
+        } else {
+            speechRecognitionAuthorized = false
+        }
+    }
+    
+    
+    
+    @IBAction func handleSnapshot(_ sender: UIButton) {
+        sender.isEnabled = false
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { _ in
+            sender.isEnabled = true
+        });
+        // TODO reduce cut and paste with code in ViewController+ObjectSelection
+        guard (session.currentFrame?.camera.transform) != nil && currentJobUUID != nil else {
+            return
+        }
+        
+        { [frameCopy = self.session.currentFrame, sceneImage = self.sceneView.snapshot()] in
+            let imageData:Data? = UIImageJPEGRepresentation(sceneImage, 0.8)!
+            let additionalImageID = UUID().uuidString
+            let imageRef = self.storageRef?.child(additionalImageID + ".jpg")
+            let metaData = StorageMetadata()
+            announce(announcement: "Snapshot")
+            
+            metaData.contentType = "image/jpg"
+            // need to use an async queue here so we don't freeze the whole UI
+            uploadQueue.async {
+                self.uploadSemaphore.wait()
+                imageRef?.putData(imageData!, metadata: metaData) { (metadata, error) in
+                    // done uploading, somone else can go now.
+                    self.uploadSemaphore.signal()
+                    guard metadata != nil else {
+                        // Uh-oh, an error occurred!
+                        return
+                    }
+                    let dbPath = "labeling_jobs/" + self.currentJobUUID! + "/additional_images/" + additionalImageID
+                    self.db?.reference(withPath: dbPath).setValue(["imageSequenceNumber": self.imageSequenceNumber])
+                    self.imageSequenceNumber += 1
+                    // store the new AR frame so we can reference it later
+                    self.jobs[self.currentJobUUID!]?.arFrames[additionalImageID] = frameCopy!
+                }
+            }
+        }()
     }
     
     @IBAction func handleLogout(_ sender: Any) {
@@ -201,6 +380,41 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
             } else {
                 // No user is signed in
                 self.login()
+            }
+        }
+    }
+    
+    func announce(announcement: String, overrideRestartVoiceOver: Bool = false, overrideStartVoiceOverValue: Bool = false) {
+        if isReadingAnnouncement || synth.isSpeaking {
+            return
+        }
+        print("Announcing", announcement)
+        if UIAccessibilityIsVoiceOverRunning() {
+            // make sure no one else starts an announcement
+            isReadingAnnouncement = true
+        }
+        if overrideRestartVoiceOver {
+            shouldResumeVoiceRecognition = overrideStartVoiceOverValue
+        } else {
+            shouldResumeVoiceRecognition = recognitionTask != nil
+        }
+        if recognitionTask != nil {
+            cleanupVoiceRecognition()
+        }
+        if UIAccessibilityIsVoiceOverRunning() {
+            // use the Voice over API instead of text to speech
+            print("Notifying via VoiceOver", announcement)
+            UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement)
+        } else {
+            let audioSession = AVAudioSession.sharedInstance()
+            do {
+                try audioSession.setCategory(AVAudioSessionCategoryPlayback)
+                try audioSession.setActive(false, with: .notifyOthersOnDeactivation)
+                let utterance = AVSpeechUtterance(string: announcement)
+                utterance.rate = 0.6
+                synth.speak(utterance)
+            } catch {
+                print("UNEXPECTED ERROR!")
             }
         }
     }
@@ -226,6 +440,39 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
 			"Please quit the application."
 			displayErrorMessage(title: "Unsupported platform", message: sessionErrorMsg, allowRestart: false)
 		}
+        synth.delegate = self
+        if useSpeechRecognizer {
+            speechRecognizer.delegate = self
+            
+            SFSpeechRecognizer.requestAuthorization { authStatus in
+                /*
+                 The callback may not be called on the main thread. Add an
+                 operation to the main queue to update the record button's state.
+                 */
+                OperationQueue.main.addOperation {
+                    switch authStatus {
+                    case .authorized:
+                        self.speechRecognitionAuthorized = true
+                        
+                    case .denied:
+                        self.speechRecognitionAuthorized = false
+                        
+                    case .restricted:
+                        self.speechRecognitionAuthorized = false
+                        
+                    case .notDetermined:
+                        self.speechRecognitionAuthorized = false
+                    }
+                }
+            }
+        }
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.UIAccessibilityAnnouncementDidFinish, object: nil, queue: nil) { (notification) -> Void in
+            self.isReadingAnnouncement = false
+            if self.shouldResumeVoiceRecognition {
+                self.shouldResumeVoiceRecognition = false
+                try! self.startRecording()
+            }
+        }
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
@@ -233,6 +480,21 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
 		session.pause()
 	}
 	
+    // MARK: - Speech Synthesizer Delegate
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer,
+                           didFinish utterance: AVSpeechUtterance) {
+        if shouldResumeVoiceRecognition {
+            try! startRecording()
+        }
+    }
+    
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer,
+                           didCancel utterance: AVSpeechUtterance) {
+        if shouldResumeVoiceRecognition {
+            try! startRecording()
+        }
+    }
+    
     // MARK: - Setup
     
 	func setupScene() {
@@ -355,39 +617,80 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
 		restartExperience(self)
 		textManager.showMessage("RESETTING SESSION")
 	}
+    
+    func cleanupVoiceRecognition() {
+        recognitionTask?.cancel()
+        recognitionRequest?.endAudio()
+        let inputNode = audioEngine.inputNode
+        inputNode.removeTap(onBus: 0)
+        audioEngine.stop()
+        try! AVAudioSession.sharedInstance().setActive(false)
 
+        recognitionRequest = nil
+        recognitionTask = nil
+    }
     
     var feedbackTimer: Date!
+    var voiceTimer = [VirtualObject: Date]()
     @objc func getHapticFeedback() {
         guard sceneView.session.currentFrame != nil && sceneView.session.currentFrame?.camera.transform != nil else {
             return
         }
+        var objectsInRange = [VirtualObject]()
+        var objectDistanceStrings = [String]()
+
         var shouldGiveFeedback: Bool = false
         let curLocation = getRealCoordinates(sceneView: sceneView)
         for virtualObject in virtualObjectManager.virtualObjects {
-            /*let referencePosition = virtualObject.referenceNode.convertPosition(SCNVector3(x: curLocation.location.x, y: curLocation.location.y, z: curLocation.location.z), from:sceneView.scene.rootNode)
-              let distanceToObject = sqrt(referencePosition.x*referencePosition.x +
+            let referencePosition = virtualObject.cubeNode.convertPosition(SCNVector3(x: curLocation.location.x, y: curLocation.location.y, z: curLocation.location.z), from:sceneView.scene.rootNode)
+            let distanceToObject = sqrt(referencePosition.x*referencePosition.x +
                                         referencePosition.y*referencePosition.y +
-                                        referencePosition.z*referencePosition.z)*/
-            let virtualObjectWorldPosition = virtualObject.referenceNode.convertPosition(SCNVector3(x: 0.0, y: 0.0, z: 0.0), to:sceneView.scene.rootNode)
+                                        referencePosition.z*referencePosition.z)
+            let distanceToObjectFloorPlane = sqrt(referencePosition.x*referencePosition.x + referencePosition.z*referencePosition.z)
+            let virtualObjectWorldPosition = virtualObject.cubeNode.convertPosition(SCNVector3(x: 0.0, y: 0.0, z: 0.0), to:sceneView.scene.rootNode)
             // vector from camera to virtual object
             let cameraToObject = Vector3(x:virtualObjectWorldPosition.x - curLocation.location.x,
                                          y:virtualObjectWorldPosition.y - curLocation.location.y,
                                          z:virtualObjectWorldPosition.z - curLocation.location.z).normalized()
-
+            let cameraToObjectFloorPlane = Vector3(x:cameraToObject.x,
+                                                   y:0.0,
+                                                   z:cameraToObject.z).normalized()
             let negZAxis = curLocation.transformMatrix*Vector3(x: 0.0, y:0.0, z: -1.0)
+            let negZAxisFloorPlane = Vector3(x: negZAxis.x, y: 0.0, z: negZAxis.z).normalized()
             let angleDiff = acos(negZAxis.dot(cameraToObject))
-            if abs(angleDiff) < 0.2 {
+            let angleDiffFloorPlane = acos(negZAxisFloorPlane.dot(cameraToObjectFloorPlane))
+
+            if (!feedbackMode.isOn && abs(angleDiff) < 0.2) || (feedbackMode.isOn && abs(angleDiffFloorPlane) < 0.2){
                 shouldGiveFeedback = true
+                var distanceToAnnounce: Float?
+                if feedbackMode.isOn {
+                    distanceToAnnounce = distanceToObjectFloorPlane
+                } else {
+                    distanceToAnnounce = distanceToObject
+                }
+                let distanceString = String(format: "%.1f feet", (distanceToAnnounce!*100.0/2.54/12.0))
+                objectsInRange.append(virtualObject)
+                objectDistanceStrings.append(distanceString)
             }
         }
-        // need to fix this let directionToNextKeypoint = getDirectionToNextKeypoint(currentLocation: curLocation)
         if(shouldGiveFeedback) {
             let timeInterval = feedbackTimer.timeIntervalSinceNow
             if(-timeInterval > 0.4) {
                 feedbackGenerator.impactOccurred()
                 feedbackTimer = Date()
             }
+        }
+        var objectsToAnnounce = ""
+        for (idx, object) in objectsInRange.enumerated() {
+            let voiceInterval = voiceTimer[object]?.timeIntervalSinceNow
+            if voiceInterval == nil || -voiceInterval! > 1.0 {
+                // TODO: add support for only announcing this when either a switch is toggled or when a button is pressed
+                objectsToAnnounce += object.objectToFind + " " + objectDistanceStrings[idx] + "\n"
+                voiceTimer[object] = Date()
+            }
+        }
+        if !objectsToAnnounce.isEmpty && recognitionTask == nil {
+            announce(announcement: objectsToAnnounce)
         }
     }
     
@@ -454,6 +757,36 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate {
 		                            messageType: .planeEstimation)
 	}
 
+    func postNewJob(objectToFind: String) {
+        guard (session.currentFrame?.camera.transform) != nil else {
+            return
+        }
+        
+        { [frameCopy = self.session.currentFrame, sceneImage = self.sceneView.snapshot()] in
+            let imageData:Data? = UIImageJPEGRepresentation(sceneImage, 0.8)!
+            let parameters: NSDictionary = [
+                "object_to_find": objectToFind,
+                "creation_timestamp": ServerValue.timestamp(),
+                "requesting_user": self.auth!.currentUser!.uid
+            ]
+            // dispatch to the backend for labeling
+            let jobUUID = UUID().uuidString
+            self.currentJobUUID = jobUUID       // keep track so we can add additional snapshots
+            let imageRef = self.storageRef?.child(jobUUID + ".jpg")
+            let metaData = StorageMetadata()
+            metaData.contentType = "image/jpg"
+            imageRef?.putData(imageData!, metadata: metaData) { (metadata, error) in
+                guard metadata != nil else {
+                    // Uh-oh, an error occurred!
+                    return
+                }
+                let dbPath = "labeling_jobs/" + jobUUID
+                self.db?.reference(withPath: dbPath).setValue(parameters)
+                self.jobs[jobUUID] = JobInfo(arFrames: [jobUUID: frameCopy!], sceneImage: sceneImage, objectToFind: objectToFind)
+            }
+        }()
+    }
+    
 	// MARK: - Error handling
 	func displayErrorMessage(title: String, message: String, allowRestart: Bool = false) {
 		// Blur the background.
