@@ -66,8 +66,10 @@ class TextManager {
 	
 	func showMessage(_ text: String, autoHide: Bool = true) {
 		DispatchQueue.main.async {
-            // TODO: post to VoiceOver
-            
+            if UIAccessibilityIsVoiceOverRunning() {
+                // send to VoiceOver
+                self.viewController.announce(announcement: text)
+            }
 			// cancel any previous hide timer
 			self.messageHideTimer?.invalidate()
 			
