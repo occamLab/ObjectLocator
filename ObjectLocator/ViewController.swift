@@ -77,7 +77,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
     @IBOutlet weak var snapshotButton: UIButton!
     
     // MARK: - FireBase handles
-    var auth: Auth?
+    lazy var auth = Auth.auth()
     var authUI: FUIAuth?
     var db: Database?
     var speechRecognitionAuthorized = false
@@ -140,12 +140,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
         if object.parent == nil {
             self.serialQueue.async {
                 self.sceneView.scene.rootNode.addChildNode(object)
+                self.announce(announcement: "Found " + objectToFind)
             }
         }
     }
     
     func setupObservers() {
-        let responsePathRef = Database.database().reference(withPath: "responses/" + auth!.currentUser!.uid)
+        guard let user = auth.currentUser else {
+            return
+        }
+        let responsePathRef = Database.database().reference(withPath: "responses/" + user.uid)
         responsePathRef.observe(.childChanged) { (snapshot) -> Void in
             self.handleResponse(snapshot: snapshot)
         }
@@ -300,7 +304,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
         }
         
         { [frameCopy = self.session.currentFrame, sceneImage = self.sceneView.snapshot()] in
-            let imageData:Data? = UIImageJPEGRepresentation(sceneImage, 0.8)!
+            let imageData:Data = UIImageJPEGRepresentation(sceneImage, 0.8)!
             let additionalImageID = UUID().uuidString
             let imageRef = self.storageRef?.child(additionalImageID + ".jpg")
             let metaData = StorageMetadata()
@@ -310,7 +314,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
             // need to use an async queue here so we don't freeze the whole UI
             uploadQueue.async {
                 self.uploadSemaphore.wait()
-                imageRef?.putData(imageData!, metadata: metaData) { (metadata, error) in
+                imageRef?.putData(imageData, metadata: metaData) { (metadata, error) in
                     // done uploading, somone else can go now.
                     self.uploadSemaphore.signal()
                     guard metadata != nil else {
@@ -331,7 +335,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
         // kill all observers and remove any old jobs
         _ = observers.map { $0?.removeAllObservers() }
         observers = [DatabaseReference?]()
-        jobs = [String: JobInfo]()
+        jobs.removeAll()
         try! Auth.auth().signOut()
     }
     
@@ -339,6 +343,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
         Auth.auth().addStateDidChangeListener { auth, user in
             if user != nil {
                 // User is signed in.
+                print("USER LOGGED IN")
+                // reset observers
+                _ = self.observers.map { $0?.removeAllObservers() }
+                self.observers.removeAll()
+                self.setupObservers()
             } else {
                 // No user is signed in
                 self.login()
@@ -646,10 +655,10 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
             let angleDiff = acos(negZAxis.dot(cameraToObject))
             let angleDiffFloorPlane = acos(negZAxisFloorPlane.dot(cameraToObjectFloorPlane))
 
-            if (!feedbackMode.isOn && abs(angleDiff) < 0.2) || (feedbackMode.isOn && abs(angleDiffFloorPlane) < 0.2){
+            if (feedbackMode.isOn && abs(angleDiff) < 0.2) || (!feedbackMode.isOn && abs(angleDiffFloorPlane) < 0.2) {
                 shouldGiveFeedback = true
                 var distanceToAnnounce: Float?
-                if feedbackMode.isOn {
+                if !feedbackMode.isOn {
                     distanceToAnnounce = distanceToObjectFloorPlane
                 } else {
                     distanceToAnnounce = distanceToObject
@@ -725,10 +734,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
     }
 	
 	func resetTracking() {
-        // get rid of any observers and jobs we're waiting on
-        _ = observers.map { $0?.removeAllObservers() }
-        jobs = [String: JobInfo]()
-
+        // get rid of any jobs we're waiting on
+        jobs.removeAll()
 		session.run(standardConfiguration, options: [.resetTracking, .removeExistingAnchors])
 		
 		// reset timer
@@ -737,14 +744,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
 			trackingFallbackTimer = nil
 		}
         
-        setupObservers()
 		textManager.scheduleMessage("FIND A SURFACE TO PLACE AN OBJECT",
 		                            inSeconds: 7.5,
 		                            messageType: .planeEstimation)
 	}
 
     func postNewJob(objectToFind: String) {
-        guard (session.currentFrame?.camera.transform) != nil else {
+        guard (session.currentFrame?.camera.transform) != nil, let user = auth.currentUser else {
             return
         }
         
@@ -753,7 +759,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
             let parameters: NSDictionary = [
                 "object_to_find": objectToFind,
                 "creation_timestamp": ServerValue.timestamp(),
-                "requesting_user": self.auth!.currentUser!.uid
+                "requesting_user": user.uid
             ]
             // dispatch to the backend for labeling
             let jobUUID = UUID().uuidString
