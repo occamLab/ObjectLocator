@@ -141,8 +141,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
                                                                                          in_img: job.arFrames[labeledImageUUID!],
                                                                                          objectPos: nil)
         if worldPos == nil {
-            // TODO: should print debug info
-            // TODO: don't really need this
+            // TODO: Should only triangulate if the responses are from the same user
             if job.responses.count < 2 {
                 // wait for more responses
                 job.status = JobStatus.waitingForAdditionalResponse
@@ -151,16 +150,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
                 return
             }
             // try to do stereo matching (just use the first two matches for now)
-            print("job.responses[0].imageUUID", job.arFrames[job.responses[0].imageUUID]?.timestamp)
-            print("job.responses[1].imageUUID", job.arFrames[job.responses[1].imageUUID]?.timestamp)
-
             (worldPos, _, _) = self.virtualObjectManager.worldPositionFromStereoScreenPosition(pixel_location_1: job.responses[0].pixelLocation,
                                                                                                    pixel_location_2: job.responses[1].pixelLocation,
                                                                                                    in: self.sceneView,
                                                                                                    in_img_1: job.arFrames[job.responses[0].imageUUID],
                                                                                                    in_img_2: job.arFrames[job.responses[1].imageUUID],
                                                                                                    objectPos: nil)
-            print("worldPos via stereo", worldPos)
         }
         if worldPos == nil {
             // give up
