@@ -157,7 +157,7 @@ class VirtualObjectManager {
 	                                     in sceneView: ARSCNView,
                                          in_img currFrame : ARFrame?,
 	                                     objectPos: float3?,
-	                                     infinitePlane: Bool = false) -> (position: float3?, planeAnchor: ARPlaneAnchor?, hitAPlane: Bool) {
+                                         allowFeaureHit: Bool = false) -> (position: float3?, planeAnchor: ARPlaneAnchor?, hitAPlane: Bool) {
         // TODO:  In some cases an object sits high above a plane.  Such as a chair on the floor.  In this
         // case you want to first test for a feature point hit, and if the feature point is sufficiently
         // far from a plane hit, you should default to the feature point, else use the plane.
@@ -203,21 +203,62 @@ class VirtualObjectManager {
             //    the feature point cloud.
             
             var featureHitTestPosition: float3?
-            let highQualityfeatureHitTestResults = frame.hitTestWithFeatures(position,
-                                                                             view:sceneView,
-                                                                             coneOpeningAngleInDegrees: 18,
-                                                                             minDistance: 0.2,
-                                                                             maxDistance: 2.0)
-            
-            if !highQualityfeatureHitTestResults.isEmpty {
-                let result = highQualityfeatureHitTestResults[0]
-                featureHitTestPosition = result.position
+            if allowFeaureHit {
+                let highQualityfeatureHitTestResults = frame.hitTestWithFeatures(position,
+                                                                                 view:sceneView,
+                                                                                 coneOpeningAngleInDegrees: 18,
+                                                                                 minDistance: 0.2,
+                                                                                 maxDistance: 2.0)
+                
+                if !highQualityfeatureHitTestResults.isEmpty {
+                    let result = highQualityfeatureHitTestResults[0]
+                    featureHitTestPosition = result.position
+                }
             }
             return (featureHitTestPosition, nil, false)
         }
         
 		return (nil, nil, false)
 	}
+    
+    func worldPositionFromStereoScreenPosition(pixel_location_1: CGPoint,
+                                               pixel_location_2: CGPoint,
+                                               in sceneView: ARSCNView,
+                                               in_img_1 : ARFrame?,
+                                               in_img_2 : ARFrame?,
+                                               objectPos: float3?) -> (position: float3?, planeAnchor: ARPlaneAnchor?, hitAPlane: Bool) {
+        // TODO:  In some cases an object sits high above a plane.  Such as a chair on the floor.  In this
+        // case you want to first test for a feature point hit, and if the feature point is sufficiently
+        // far from a plane hit, you should default to the feature point, else use the plane.
+        guard let frame1 = in_img_1, let frame2 = in_img_2 else {
+            return (nil, nil, false)
+        }
+        guard let ray1 = frame1.hitTestRayFromScreenPos(view: sceneView, pixel_location_1),
+            let ray2 = frame2.hitTestRayFromScreenPos(view: sceneView, pixel_location_2) else {
+            return (nil, nil, false)
+        }
+
+        // compute closest point between the two rays using the method described here: http://morroworks.com/Content/Docs/Rays%20closest%20point.pdf
+        let A = ray1.origin
+        let B = ray2.origin
+        let a = ray1.direction
+        let b = ray2.direction
+        let c = B - A
+        let D = A + a*(-simd_dot(a,b)*simd_dot(b,c)+simd_dot(a,c)*simd_dot(b,b))/(simd_dot(a,a)*simd_dot(b,b) - simd_dot(a,b)*simd_dot(a,b))
+        let E = B + b*(simd_dot(a,b)*simd_dot(a,c)-simd_dot(b,c)*simd_dot(a,a))/(simd_dot(a,a)*simd_dot(b,b) - simd_dot(a,b)*simd_dot(a,b))
+        let closestPoint = (D + E)/2
+        print("A",A)
+        print("B",B)
+        print("a",a)
+        print("b",b)
+        print("c",c)
+        print("D",D)
+        print("E",E)
+        print("closestPoint", closestPoint)
+        
+        // we probably want to do sanity checks on this
+        return (closestPoint, nil, false)
+    }
 }
 
 // MARK: - Delegate

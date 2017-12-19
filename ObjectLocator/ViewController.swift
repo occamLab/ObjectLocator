@@ -60,6 +60,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
     var virtualObjectManager: VirtualObjectManager!
     
     var hapticTimer: Timer!
+    var snapshotTimer: Timer?
 
     var isLoadingObject: Bool = false {
         didSet {
@@ -107,9 +108,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
 	let serialQueue: DispatchQueue = ViewController.serialQueue
 	
     func handleResponse(snapshot: DataSnapshot) {
-        guard let job = jobs[snapshot.key] else {
+        print("Handling response")
+        print(jobs.keys)
+        guard var job = jobs[snapshot.key] else {
             return
         }
+        print("Still going response")
+        
+        // TODO: this is a kludge.  We probably just shouldn't be storing this info in the job id
+        job.responses.removeAll()
+
         var objectPixelLocation: CGPoint?
         var labeledImageUUID: String?
 
@@ -118,24 +126,54 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
             let values = child.value as! [String: Any]
             objectPixelLocation = CGPoint(x:Double(self.sceneView.bounds.width)*(values["x"] as! Double)/Double(job.sceneImage.size.width), y:Double(self.sceneView.bounds.height)*(values["y"] as! Double)/Double(job.sceneImage.size.height))
             labeledImageUUID = values["imageUUID"] as? String
+            if objectPixelLocation != nil && labeledImageUUID != nil {
+                job.responses.append(JobResponse(imageUUID: labeledImageUUID!, pixelLocation: objectPixelLocation!))
+            }
         }
-        guard objectPixelLocation != nil else {
+        print("Number of responses", job.responses.count)
+        guard let pixelLocation = objectPixelLocation else {
             return
         }
-        let objectToFind = jobs[snapshot.key]!.objectToFind
-        // kill the job... so we don't add it twice
-        // TODO: may want to update position when we get new data
-        jobs[snapshot.key] = nil
-
+        let objectToFind = job.objectToFind
         let object = VirtualObject(objectToFind: objectToFind)
-        let (worldPos, _, _) = self.virtualObjectManager.worldPositionFromScreenPosition(objectPixelLocation!,
+        var (worldPos, _, _) = self.virtualObjectManager.worldPositionFromScreenPosition(pixelLocation,
                                                                                          in: self.sceneView,
                                                                                          in_img: job.arFrames[labeledImageUUID!],
                                                                                          objectPos: nil)
         if worldPos == nil {
             // TODO: should print debug info
+            // TODO: don't really need this
+            if job.responses.count < 2 {
+                // wait for more responses
+                job.status = JobStatus.waitingForAdditionalResponse
+                let dbPath = "labeling_jobs/" + snapshot.key + "/job_status"
+                self.db?.reference(withPath: dbPath).setValue("waitingForAdditionalReponse")
+                return
+            }
+            // try to do stereo matching (just use the first two matches for now)
+            print("job.responses[0].imageUUID", job.arFrames[job.responses[0].imageUUID]?.timestamp)
+            print("job.responses[1].imageUUID", job.arFrames[job.responses[1].imageUUID]?.timestamp)
+
+            (worldPos, _, _) = self.virtualObjectManager.worldPositionFromStereoScreenPosition(pixel_location_1: job.responses[0].pixelLocation,
+                                                                                                   pixel_location_2: job.responses[1].pixelLocation,
+                                                                                                   in: self.sceneView,
+                                                                                                   in_img_1: job.arFrames[job.responses[0].imageUUID],
+                                                                                                   in_img_2: job.arFrames[job.responses[1].imageUUID],
+                                                                                                   objectPos: nil)
+            print("worldPos via stereo", worldPos)
+        }
+        if worldPos == nil {
+            // give up
+            job.status = JobStatus.failed
+            jobs[snapshot.key] = nil
             return
         }
+        // kill the job... so we don't add it twice
+        job.status = JobStatus.placed
+        let dbPath = "labeling_jobs/" + snapshot.key + "/job_status"
+        self.db?.reference(withPath: dbPath).setValue("objectPlaced")
+
+        jobs[snapshot.key] = nil
         self.virtualObjectManager.loadVirtualObject(object, to: worldPos!, cameraTransform: job.arFrames[snapshot.key]!.camera.transform)
         if object.parent == nil {
             self.serialQueue.async {
@@ -253,7 +291,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
                                         let jobText = allowableWords.joined(separator:" ")
                                         pendingRequest = []
                                         segmentsProcessed = firstUnconfident!
-                                        print("POSTING A JOB", jobText)
                                         self.postNewJob(objectToFind: jobText)
                                         self.announce(announcement: "Finding " + jobText)
                                     }
@@ -269,6 +306,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
             if error != nil || isFinal {
                 // If we aren't planning on resuming voice recognition, then we got here due to an error, timeout, or stop request
                 if !self.shouldResumeVoiceRecognition {
+                    self.snapshotTimer?.invalidate()
                     self.announce(announcement: "Voice recognition stopped.", overrideRestartVoiceOver: true, overrideStartVoiceOverValue: false)
                 }
             }
@@ -291,15 +329,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
         }
     }
     
-    
-    
-    @IBAction func handleSnapshot(_ sender: UIButton) {
-        sender.isEnabled = false
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { _ in
-            sender.isEnabled = true
-        });
-        // TODO reduce cut and paste with code in ViewController+ObjectSelection
-        guard (session.currentFrame?.camera.transform) != nil && currentJobUUID != nil else {
+    @objc func takeSnapshot(doAnnouncement: Bool = false) {
+        // make sure we have a valid frame and a valid job without a placement
+        guard (session.currentFrame?.camera.transform) != nil, currentJobUUID != nil, jobs[currentJobUUID!] != nil else {
             return
         }
         
@@ -308,8 +340,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
             let additionalImageID = UUID().uuidString
             let imageRef = self.storageRef?.child(additionalImageID + ".jpg")
             let metaData = StorageMetadata()
-            announce(announcement: "Snapshot")
-            
+            if doAnnouncement {
+                announce(announcement: "Snapshot")
+            }
             metaData.contentType = "image/jpg"
             // need to use an async queue here so we don't freeze the whole UI
             uploadQueue.async {
@@ -328,7 +361,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
                     self.jobs[self.currentJobUUID!]?.arFrames[additionalImageID] = frameCopy!
                 }
             }
-        }()
+            }()
+    }
+    
+    @IBAction func handleSnapshot(_ sender: UIButton) {
+        sender.isEnabled = false
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { _ in
+            sender.isEnabled = true
+        });
+        takeSnapshot(doAnnouncement: true)
     }
     
     @IBAction func handleLogout(_ sender: Any) {
@@ -759,7 +800,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
             let parameters: NSDictionary = [
                 "object_to_find": objectToFind,
                 "creation_timestamp": ServerValue.timestamp(),
-                "requesting_user": user.uid
+                "requesting_user": user.uid,
+                "job_status": "waitingForFirstResponse"
             ]
             // dispatch to the backend for labeling
             let jobUUID = UUID().uuidString
@@ -775,6 +817,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
                 let dbPath = "labeling_jobs/" + jobUUID
                 self.db?.reference(withPath: dbPath).setValue(parameters)
                 self.jobs[jobUUID] = JobInfo(arFrames: [jobUUID: frameCopy!], sceneImage: sceneImage, objectToFind: objectToFind)
+                self.snapshotTimer?.invalidate()
+                self.snapshotTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: (#selector(self.takeSnapshot)), userInfo: nil, repeats: true)
             }
         }()
     }
@@ -796,4 +840,27 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
 		}
 	}
     
+}
+
+extension UIViewController {
+    class func displaySpinner(onView : UIView) -> UIView {
+        let spinnerView = UIView.init(frame: onView.bounds)
+        spinnerView.backgroundColor = UIColor.init(red: 0.5, green: 0.5, blue: 0.5, alpha: 0.5)
+        let ai = UIActivityIndicatorView.init(activityIndicatorStyle: .whiteLarge)
+        ai.startAnimating()
+        ai.center = spinnerView.center
+        
+        DispatchQueue.main.async {
+            spinnerView.addSubview(ai)
+            onView.addSubview(spinnerView)
+        }
+        
+        return spinnerView
+    }
+    
+    class func removeSpinner(spinner :UIView) {
+        DispatchQueue.main.async {
+            spinner.removeFromSuperview()
+        }
+    }   
 }

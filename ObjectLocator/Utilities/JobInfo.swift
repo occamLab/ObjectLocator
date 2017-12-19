@@ -9,8 +9,26 @@
 import Foundation
 import ARKit
 
-public struct JobInfo {
-    var arFrames: [String: ARFrame]
-    var sceneImage : UIImage        // Used for dimension checking... TODO: Just store bounds
-    var objectToFind: String
+enum JobStatus {
+    case waitingForInitialResponse, waitingForPosition, waitingForAdditionalResponse, placed, failed
 }
+
+public struct JobInfo {
+    var arFrames : [String: ARFrame]
+    var sceneImage : UIImage        // Used for dimension checking... TODO: Just store bounds
+    var objectToFind : String
+    var status : JobStatus = JobStatus.waitingForInitialResponse
+    var responses = [JobResponse]()
+    
+    init(arFrames: [String: ARFrame], sceneImage: UIImage, objectToFind: String) {
+        self.arFrames = arFrames
+        self.sceneImage = sceneImage
+        self.objectToFind = objectToFind
+    }
+}
+
+public struct JobResponse {
+    var imageUUID : String
+    var pixelLocation : CGPoint
+}
+

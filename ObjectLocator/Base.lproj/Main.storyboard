@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BV1-FR-VrT">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -109,17 +109,19 @@
                                     <action selector="handleLogout:" destination="BV1-FR-VrT" eventType="primaryActionTriggered" id="GwI-uE-FJ5"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CMf-Oj-f5N">
-                                <rect key="frame" x="275" y="613" width="84" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CMf-Oj-f5N">
+                                <rect key="frame" x="286.5" y="622" width="65" height="30"/>
                                 <state key="normal" title="Snapshot"/>
                                 <connections>
                                     <action selector="handleSnapshot:" destination="BV1-FR-VrT" eventType="touchUpInside" id="s5z-yl-wXH"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="3D Feedback" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jYa-Du-eVQ">
-                                <rect key="frame" x="15" y="585" width="141" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="mez-Sp-RsI">
+                                <rect key="frame" x="39.5" y="621" width="51" height="31"/>
+                                <accessibility key="accessibilityConfiguration" label="3D Feedback"/>
+                            </switch>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="3D Feedback" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jYa-Du-eVQ">
+                                <rect key="frame" x="39.5" y="595.5" width="102" height="20.5"/>
                                 <accessibility key="accessibilityConfiguration">
                                     <bool key="isElement" value="NO"/>
                                 </accessibility>
@@ -127,11 +129,6 @@
                                 <color key="textColor" red="0.78343700000000005" green="0.0" blue="0.091896386629999993" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="mez-Sp-RsI">
-                                <rect key="frame" x="15" y="612" width="49" height="31"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <accessibility key="accessibilityConfiguration" label="3D Feedback"/>
-                            </switch>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -141,13 +138,19 @@
                             <constraint firstItem="E6c-py-dvH" firstAttribute="top" secondItem="RLh-bf-1c3" secondAttribute="top" id="7gH-DS-Crg"/>
                             <constraint firstItem="E6c-py-dvH" firstAttribute="leading" secondItem="GBj-4O-Whc" secondAttribute="leading" id="8nh-ZQ-AuM"/>
                             <constraint firstItem="9e0-zv-RiN" firstAttribute="top" secondItem="E6c-py-dvH" secondAttribute="top" constant="15" id="FTS-AH-WBr"/>
+                            <constraint firstItem="mez-Sp-RsI" firstAttribute="top" secondItem="jYa-Du-eVQ" secondAttribute="bottom" constant="5" id="GU2-L2-I8h"/>
                             <constraint firstItem="BgI-fb-Vqi" firstAttribute="leading" secondItem="9e0-zv-RiN" secondAttribute="trailing" constant="15" id="MwJ-LS-qaQ"/>
+                            <constraint firstItem="CMf-Oj-f5N" firstAttribute="leading" secondItem="xcf-ic-uGo" secondAttribute="trailing" constant="75" id="QCl-WJ-tn8"/>
+                            <constraint firstItem="GBj-4O-Whc" firstAttribute="bottom" secondItem="CMf-Oj-f5N" secondAttribute="bottom" constant="15" id="Qf5-JA-eFf"/>
                             <constraint firstItem="SuF-Os-zmb" firstAttribute="top" secondItem="E6c-py-dvH" secondAttribute="top" id="UMK-or-VVf"/>
                             <constraint firstItem="BgI-fb-Vqi" firstAttribute="top" secondItem="GBj-4O-Whc" secondAttribute="top" constant="20" id="V7S-nn-Lcz"/>
+                            <constraint firstItem="jYa-Du-eVQ" firstAttribute="leading" secondItem="mez-Sp-RsI" secondAttribute="leading" id="WVR-h1-5qA"/>
                             <constraint firstItem="xcf-ic-uGo" firstAttribute="centerX" secondItem="GBj-4O-Whc" secondAttribute="centerX" id="ZCe-ld-yQW"/>
+                            <constraint firstItem="xcf-ic-uGo" firstAttribute="leading" secondItem="mez-Sp-RsI" secondAttribute="trailing" constant="75" id="aBw-b9-70l"/>
                             <constraint firstItem="9e0-zv-RiN" firstAttribute="leading" secondItem="E6c-py-dvH" secondAttribute="leading" constant="15" id="iIf-WZ-kZj"/>
                             <constraint firstItem="GBj-4O-Whc" firstAttribute="trailing" secondItem="E6c-py-dvH" secondAttribute="trailing" id="lHd-lf-g1u"/>
                             <constraint firstItem="GBj-4O-Whc" firstAttribute="bottom" secondItem="xcf-ic-uGo" secondAttribute="bottom" constant="15" id="sOL-M5-nW8"/>
+                            <constraint firstItem="GBj-4O-Whc" firstAttribute="bottom" secondItem="mez-Sp-RsI" secondAttribute="bottom" constant="15" id="tnT-j8-ifw"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="GBj-4O-Whc"/>
                     </view>
