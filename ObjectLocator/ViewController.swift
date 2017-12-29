@@ -127,7 +127,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
             objectPixelLocation = CGPoint(x:Double(self.sceneView.bounds.width)*(values["x"] as! Double)/Double(job.sceneImage.size.width), y:Double(self.sceneView.bounds.height)*(values["y"] as! Double)/Double(job.sceneImage.size.height))
             labeledImageUUID = values["imageUUID"] as? String
             if objectPixelLocation != nil && labeledImageUUID != nil {
-                job.responses.append(JobResponse(imageUUID: labeledImageUUID!, pixelLocation: objectPixelLocation!))
+                let firstUnderscore = child.key.index(of: "_") ?? child.key.endIndex
+                let labelerID = child.key[..<firstUnderscore]
+                job.responses.append(JobResponse(labelerID: String(labelerID), imageUUID: labeledImageUUID!, pixelLocation: objectPixelLocation!))
             }
         }
         print("Number of responses", job.responses.count)
@@ -141,8 +143,19 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
                                                                                          in_img: job.arFrames[labeledImageUUID!],
                                                                                          objectPos: nil)
         if worldPos == nil {
-            // TODO: Should only triangulate if the responses are from the same user
-            if job.responses.count < 2 {
+            var labelerResponses = [String: [JobResponse]]()
+            var twoResponsesFromSameUser : [JobResponse]? = nil
+            for response in job.responses {
+                if labelerResponses[response.labelerID] == nil {
+                    labelerResponses[response.labelerID] = [response]
+                } else {
+                    labelerResponses[response.labelerID]!.append(response)
+                    twoResponsesFromSameUser = labelerResponses[response.labelerID]
+                    break
+                }
+                print(labelerResponses)
+            }
+            guard let triangulationJobs = twoResponsesFromSameUser else {
                 // wait for more responses
                 job.status = JobStatus.waitingForAdditionalResponse
                 let dbPath = "labeling_jobs/" + snapshot.key + "/job_status"
@@ -150,11 +163,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
                 return
             }
             // try to do stereo matching (just use the first two matches for now)
-            (worldPos, _, _) = self.virtualObjectManager.worldPositionFromStereoScreenPosition(pixel_location_1: job.responses[0].pixelLocation,
-                                                                                                   pixel_location_2: job.responses[1].pixelLocation,
+            (worldPos, _, _) = self.virtualObjectManager.worldPositionFromStereoScreenPosition(pixel_location_1: triangulationJobs[0].pixelLocation,
+                                                                                                   pixel_location_2: triangulationJobs[1].pixelLocation,
                                                                                                    in: self.sceneView,
-                                                                                                   in_img_1: job.arFrames[job.responses[0].imageUUID],
-                                                                                                   in_img_2: job.arFrames[job.responses[1].imageUUID],
+                                                                                                   in_img_1: job.arFrames[triangulationJobs[0].imageUUID],
+                                                                                                   in_img_2: job.arFrames[triangulationJobs[1].imageUUID],
                                                                                                    objectPos: nil)
         }
         if worldPos == nil {

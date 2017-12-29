@@ -28,6 +28,7 @@ public struct JobInfo {
 }
 
 public struct JobResponse {
+    var labelerID : String
     var imageUUID : String
     var pixelLocation : CGPoint
 }
