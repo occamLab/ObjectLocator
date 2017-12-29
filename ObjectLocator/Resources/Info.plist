@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Your microphone is used to record your speech, which allows speech recognition functions to work</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Speech recognition will be used to activate various functions of the app</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -30,10 +26,14 @@
 	<string>The camera is used for augmenting reality</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>The location is used for augmenting reality</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Your microphone is used to record your speech, which allows speech recognition functions to work</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Save photos of your ARExperience</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Save photos of your AR experience</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Speech recognition will be used to activate various functions of the app</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
