@@ -35,7 +35,7 @@ extension Array where Iterator.Element == float3 {
 	}
 }
 
-extension RangeReplaceableCollection where IndexDistance == Int {
+extension RangeReplaceableCollection {
 	mutating func keepLast(_ elementsToKeep: Int) {
 		if count > elementsToKeep {
 			self.removeFirst(count - elementsToKeep)
@@ -80,12 +80,14 @@ extension float4x4 {
 extension CGPoint {
 	
 	init(_ size: CGSize) {
-		self.x = size.width
+        self.init()
+        self.x = size.width
 		self.y = size.height
 	}
 	
 	init(_ vector: SCNVector3) {
-		self.x = CGFloat(vector.x)
+        self.init()
+        self.x = CGFloat(vector.x)
 		self.y = CGFloat(vector.y)
 	}
 	
@@ -137,7 +139,8 @@ extension CGPoint {
 
 extension CGSize {
 	init(_ point: CGPoint) {
-		self.width = point.x
+        self.init()
+        self.width = point.x
 		self.height = point.y
 	}
 

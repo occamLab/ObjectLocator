@@ -39,7 +39,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
     
     let standardConfiguration: ARWorldTrackingConfiguration = {
         let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = .horizontal
+        if #available(iOS 11.3, *) {
+            configuration.planeDetection = [.horizontal, .vertical]
+        } else {
+            // Fallback on earlier versions
+            configuration.planeDetection = [.horizontal]
+        }
         return configuration
     }()
     
@@ -72,7 +77,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
     }
     
     // MARK: - Other Properties
-    
     var textManager: TextManager!
     var restartExperienceButtonIsEnabled = true
     @IBOutlet weak var snapshotButton: UIButton!
