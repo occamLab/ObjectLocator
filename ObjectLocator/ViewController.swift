@@ -178,6 +178,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
             // give up
             job.status = JobStatus.failed
             jobs[snapshot.key] = nil
+            // TOOD: check whether or not we need to update the job_status to a new value in Firebase
             return
         }
         // kill the job... so we don't add it twice
