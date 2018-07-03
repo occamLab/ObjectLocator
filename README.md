@@ -36,7 +36,7 @@ Where are we in development of this? Who is working on this, and where (on what 
 
 ## Setup and Dependencies
 
-The project utilizes CocoaPods, however, we are version controlling these Pods.  The project should not require any steps to get CocoaPods working.  To build / edit the project, make sure you open "ObjectLocator.xcworkspace" rather then "OBjectLocator.xcodeproj"
+The project utilizes CocoaPods, however, we are version controlling these Pods.  The project should not require any steps to get CocoaPods working.  To build / edit the project, make sure you open "ObjectLocator.xcworkspace" rather then "ObjectLocator.xcodeproj"
 
 We are not putting the file `GoogleService-Info.plist` under version control.  You should download that from the "object-locator" FireBase project using the typical procedures (TODO: put a link).
 
