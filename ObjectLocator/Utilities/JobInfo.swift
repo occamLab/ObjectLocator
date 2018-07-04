@@ -14,14 +14,14 @@ enum JobStatus {
 }
 
 public struct JobInfo {
-    var arFrames : [String: ARFrame]
+    var cameraTransforms : [String: matrix_float4x4]
     var sceneImage : UIImage        // Used for dimension checking... TODO: Just store bounds
     var objectToFind : String
     var status : JobStatus = JobStatus.waitingForInitialResponse
     var responses = [JobResponse]()
     
-    init(arFrames: [String: ARFrame], sceneImage: UIImage, objectToFind: String) {
-        self.arFrames = arFrames
+    init(cameraTransforms: [String: matrix_float4x4], sceneImage: UIImage, objectToFind: String) {
+        self.cameraTransforms = cameraTransforms
         self.sceneImage = sceneImage
         self.objectToFind = objectToFind
     }

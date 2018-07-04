@@ -155,18 +155,20 @@ class VirtualObjectManager {
 
 	func worldPositionFromScreenPosition(_ position: CGPoint,
 	                                     in sceneView: ARSCNView,
-                                         in_img currFrame : ARFrame?,
+                                         frame_transform : matrix_float4x4?,
 	                                     objectPos: float3?,
-                                         allowFeaureHit: Bool = false) -> (position: float3?, planeAnchor: ARPlaneAnchor?, hitAPlane: Bool) {
+                                         allowFeatureHit: Bool = false) -> (position: float3?, planeAnchor: ARPlaneAnchor?, hitAPlane: Bool) {
         // TODO:  In some cases an object sits high above a plane.  Such as a chair on the floor.  In this
         // case you want to first test for a feature point hit, and if the feature point is sufficiently
         // far from a plane hit, you should default to the feature point, else use the plane.
-        if let frame = currFrame {
+        if frame_transform != nil {
             // -------------------------------------------------------------------------------
             // 1. Always do a hit test against exisiting plane anchors first.
             //    (If any such anchors exist & only within their extents.)
             // In order to use the hit test from the point of view of the previous frame, we have to do it manually ourselves
-            let ray = frame.hitTestRayFromScreenPos(view:sceneView, position)!
+            guard let ray = sceneView.hitTestRayFromScreenPos(position, overrideFrameTransform: frame_transform) else {
+                return (nil, nil, false)
+            }
             var worldCoordinatesForPlaneHit: float3?
             var planeAnchorForPlaneHit: ARPlaneAnchor?
             var closestPlane:Float?
@@ -201,9 +203,9 @@ class VirtualObjectManager {
             // -------------------------------------------------------------------------------
             // 2. Collect more information about the environment by hit testing against
             //    the feature point cloud.
-            
-            var featureHitTestPosition: float3?
-            if allowFeaureHit {
+            /*var featureHitTestPosition: float3?
+             not supported for now
+            if allowFeatureHit {
                 let highQualityfeatureHitTestResults = frame.hitTestWithFeatures(position,
                                                                                  view:sceneView,
                                                                                  coneOpeningAngleInDegrees: 18,
@@ -215,7 +217,7 @@ class VirtualObjectManager {
                     featureHitTestPosition = result.position
                 }
             }
-            return (featureHitTestPosition, nil, false)
+            return (featureHitTestPosition, nil, false)*/
         }
         
 		return (nil, nil, false)
@@ -224,17 +226,14 @@ class VirtualObjectManager {
     func worldPositionFromStereoScreenPosition(pixel_location_1: CGPoint,
                                                pixel_location_2: CGPoint,
                                                in sceneView: ARSCNView,
-                                               in_img_1 : ARFrame?,
-                                               in_img_2 : ARFrame?,
+                                               frame_transform_1 : matrix_float4x4?,
+                                               frame_transform_2 : matrix_float4x4?,
                                                objectPos: float3?) -> (position: float3?, planeAnchor: ARPlaneAnchor?, hitAPlane: Bool) {
         // TODO:  In some cases an object sits high above a plane.  Such as a chair on the floor.  In this
         // case you want to first test for a feature point hit, and if the feature point is sufficiently
         // far from a plane hit, you should default to the feature point, else use the plane.
-        guard let frame1 = in_img_1, let frame2 = in_img_2 else {
-            return (nil, nil, false)
-        }
-        guard let ray1 = frame1.hitTestRayFromScreenPos(view: sceneView, pixel_location_1),
-            let ray2 = frame2.hitTestRayFromScreenPos(view: sceneView, pixel_location_2) else {
+        guard let ray1 = sceneView.hitTestRayFromScreenPos(pixel_location_1, overrideFrameTransform: frame_transform_1),
+            let ray2 = sceneView.hitTestRayFromScreenPos(pixel_location_2, overrideFrameTransform: frame_transform_2) else {
             return (nil, nil, false)
         }
 

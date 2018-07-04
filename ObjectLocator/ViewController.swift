@@ -112,12 +112,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
 	let serialQueue: DispatchQueue = ViewController.serialQueue
 	
     func handleResponse(snapshot: DataSnapshot) {
-        print("Handling response")
-        print(jobs.keys)
         guard var job = jobs[snapshot.key] else {
             return
         }
-        print("Still going response")
         
         // TODO: this is a kludge.  We probably just shouldn't be storing this info in the job id
         job.responses.removeAll()
@@ -128,7 +125,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
         // TODO take the area with high local density of responses
         for child in snapshot.children.allObjects as! [DataSnapshot] {
             let values = child.value as! [String: Any]
-            objectPixelLocation = CGPoint(x:Double(self.sceneView.bounds.width)*(values["x"] as! Double)/Double(job.sceneImage.size.width), y:Double(self.sceneView.bounds.height)*(values["y"] as! Double)/Double(job.sceneImage.size.height))
+            objectPixelLocation = CGPoint(x: Double(self.sceneView.bounds.width)*(values["x"] as! Double)/Double(job.sceneImage.size.width), y: Double(self.sceneView.bounds.height)*(values["y"] as! Double)/Double(job.sceneImage.size.height))
             labeledImageUUID = values["imageUUID"] as? String
             if objectPixelLocation != nil && labeledImageUUID != nil {
                 let firstUnderscore = child.key.index(of: "_") ?? child.key.endIndex
@@ -136,7 +133,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
                 job.responses.append(JobResponse(labelerID: String(labelerID), imageUUID: labeledImageUUID!, pixelLocation: objectPixelLocation!))
             }
         }
-        print("Number of responses", job.responses.count)
         guard let pixelLocation = objectPixelLocation else {
             return
         }
@@ -144,7 +140,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
         let object = VirtualObject(objectToFind: objectToFind)
         var (worldPos, _, _) = self.virtualObjectManager.worldPositionFromScreenPosition(pixelLocation,
                                                                                          in: self.sceneView,
-                                                                                         in_img: job.arFrames[labeledImageUUID!],
+                                                                                         frame_transform: job.cameraTransforms[labeledImageUUID!],
                                                                                          objectPos: nil)
         if worldPos == nil {
             var labelerResponses = [String: [JobResponse]]()
@@ -170,8 +166,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
             (worldPos, _, _) = self.virtualObjectManager.worldPositionFromStereoScreenPosition(pixel_location_1: triangulationJobs[0].pixelLocation,
                                                                                                    pixel_location_2: triangulationJobs[1].pixelLocation,
                                                                                                    in: self.sceneView,
-                                                                                                   in_img_1: job.arFrames[triangulationJobs[0].imageUUID],
-                                                                                                   in_img_2: job.arFrames[triangulationJobs[1].imageUUID],
+                                                                                                   frame_transform_1: job.cameraTransforms[triangulationJobs[0].imageUUID],
+                                                                                                   frame_transform_2: job.cameraTransforms[triangulationJobs[1].imageUUID],
                                                                                                    objectPos: nil)
         }
         if worldPos == nil {
@@ -187,7 +183,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
         self.db?.reference(withPath: dbPath).setValue("objectPlaced")
 
         jobs[snapshot.key] = nil
-        self.virtualObjectManager.loadVirtualObject(object, to: worldPos!, cameraTransform: job.arFrames[snapshot.key]!.camera.transform)
+        self.virtualObjectManager.loadVirtualObject(object, to: worldPos!, cameraTransform: job.cameraTransforms[snapshot.key]!)
         if object.parent == nil {
             self.serialQueue.async {
                 self.sceneView.scene.rootNode.addChildNode(object)
@@ -292,14 +288,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
                                 allowableWords = result.bestTranscription.segments[(idx + segmentsProcessed + 1)...(firstUnconfident!)].map({$0.substring})
                             }
                             self.newTaskQueue.async {
-                                self.newTaskSemaphore.wait()
-
                                 if allowableWords.count > pendingRequest.count {
                                     // if the task was already pending, get rid of it
                                     if jobPostingTask != nil {
                                         jobPostingTask!.cancel()
                                     }
                                     pendingRequest = allowableWords
+                                    print("dispatching new job")
                                     jobPostingTask = DispatchWorkItem {
                                         let jobText = allowableWords.joined(separator:" ")
                                         pendingRequest = []
@@ -310,7 +305,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
                                     // wait to see if more words come in
                                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0, execute: jobPostingTask!)
                                 }
-                                self.newTaskSemaphore.signal()
                             }
                         }
                     }
@@ -344,37 +338,35 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
     
     @objc func takeSnapshot(doAnnouncement: Bool = false) {
         // make sure we have a valid frame and a valid job without a placement
-        guard (session.currentFrame?.camera.transform) != nil, currentJobUUID != nil, jobs[currentJobUUID!] != nil else {
+        guard let currentTransform = session.currentFrame?.camera.transform, currentJobUUID != nil, jobs[currentJobUUID!] != nil else {
             return
         }
         
-        { [frameCopy = self.session.currentFrame, sceneImage = self.sceneView.snapshot()] in
-            let imageData:Data = UIImageJPEGRepresentation(sceneImage, 0.8)!
-            let additionalImageID = UUID().uuidString
-            let imageRef = self.storageRef?.child(additionalImageID + ".jpg")
-            let metaData = StorageMetadata()
-            if doAnnouncement {
-                announce(announcement: "Snapshot")
-            }
-            metaData.contentType = "image/jpg"
-            // need to use an async queue here so we don't freeze the whole UI
-            uploadQueue.async {
-                self.uploadSemaphore.wait()
-                imageRef?.putData(imageData, metadata: metaData) { (metadata, error) in
-                    // done uploading, somone else can go now.
-                    self.uploadSemaphore.signal()
-                    guard metadata != nil else {
-                        // Uh-oh, an error occurred!
-                        return
-                    }
-                    let dbPath = "labeling_jobs/" + self.currentJobUUID! + "/additional_images/" + additionalImageID
-                    self.db?.reference(withPath: dbPath).setValue(["imageSequenceNumber": self.imageSequenceNumber])
-                    self.imageSequenceNumber += 1
-                    // store the new AR frame so we can reference it later
-                    self.jobs[self.currentJobUUID!]?.arFrames[additionalImageID] = frameCopy!
+        let sceneImage = self.sceneView.snapshot()
+        let imageData:Data = UIImageJPEGRepresentation(sceneImage, 0.8)!
+        let additionalImageID = UUID().uuidString
+        let imageRef = self.storageRef?.child(additionalImageID + ".jpg")
+        let metaData = StorageMetadata()
+        if doAnnouncement {
+            announce(announcement: "Snapshot")
+        }
+        metaData.contentType = "image/jpg"
+    self.jobs[self.currentJobUUID!]?.cameraTransforms[additionalImageID] = currentTransform
+
+        // need to use an async queue here so we don't freeze the whole UI
+        uploadQueue.async {
+            imageRef?.putData(imageData, metadata: metaData) { (metadata, error) in
+                // done uploading, somone else can go now.
+                guard metadata != nil else {
+                    // Uh-oh, an error occurred!
+                    return
                 }
+                let dbPath = "labeling_jobs/" + self.currentJobUUID! + "/additional_images/" + additionalImageID
+                self.db?.reference(withPath: dbPath).setValue(["imageSequenceNumber": self.imageSequenceNumber])
+                self.imageSequenceNumber += 1
+                // store the new AR frame so we can reference it later
             }
-            }()
+          }
     }
     
     @IBAction func handleSnapshot(_ sender: UIButton) {
@@ -804,24 +796,24 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
 	}
 
     func postNewJob(objectToFind: String) {
-        guard (session.currentFrame?.camera.transform) != nil, let user = auth.currentUser else {
+        guard let currentCameraTransform = session.currentFrame?.camera.transform, let user = auth.currentUser else {
             return
         }
-        
-        { [frameCopy = self.session.currentFrame, sceneImage = self.sceneView.snapshot()] in
-            let imageData:Data? = UIImageJPEGRepresentation(sceneImage, 0.8)!
-            let parameters: NSDictionary = [
-                "object_to_find": objectToFind,
-                "creation_timestamp": ServerValue.timestamp(),
-                "requesting_user": user.uid,
-                "job_status": "waitingForFirstResponse"
-            ]
-            // dispatch to the backend for labeling
-            let jobUUID = UUID().uuidString
-            self.currentJobUUID = jobUUID       // keep track so we can add additional snapshots
-            let imageRef = self.storageRef?.child(jobUUID + ".jpg")
-            let metaData = StorageMetadata()
-            metaData.contentType = "image/jpg"
+        let sceneImage = self.sceneView.snapshot()
+        let imageData:Data? = UIImageJPEGRepresentation(sceneImage, 0.8)!
+        let parameters: NSDictionary = [
+            "object_to_find": objectToFind,
+            "creation_timestamp": ServerValue.timestamp(),
+            "requesting_user": user.uid,
+            "job_status": "waitingForFirstResponse"
+        ]
+        // dispatch to the backend for labeling
+        let jobUUID = UUID().uuidString
+        self.currentJobUUID = jobUUID       // keep track so we can add additional snapshots
+        let imageRef = self.storageRef?.child(jobUUID + ".jpg")
+        let metaData = StorageMetadata()
+        metaData.contentType = "image/jpg"
+        uploadQueue.async {
             imageRef?.putData(imageData!, metadata: metaData) { (metadata, error) in
                 guard metadata != nil else {
                     // Uh-oh, an error occurred!
@@ -829,11 +821,11 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
                 }
                 let dbPath = "labeling_jobs/" + jobUUID
                 self.db?.reference(withPath: dbPath).setValue(parameters)
-                self.jobs[jobUUID] = JobInfo(arFrames: [jobUUID: frameCopy!], sceneImage: sceneImage, objectToFind: objectToFind)
+                self.jobs[jobUUID] = JobInfo(cameraTransforms: [jobUUID: currentCameraTransform], sceneImage: sceneImage, objectToFind: objectToFind)
                 self.snapshotTimer?.invalidate()
                 self.snapshotTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: (#selector(self.takeSnapshot)), userInfo: nil, repeats: true)
             }
-        }()
+        }
     }
     
 	// MARK: - Error handling
