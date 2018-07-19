@@ -13,9 +13,7 @@ struct VirtualObjectDefinition: Codable, Equatable {
     let modelName: String
     let displayName: String
     let particleScaleInfo: [String: Float]
-    
-    lazy var thumbImage: UIImage = UIImage(named: self.modelName)!
-    
+        
     init(modelName: String, displayName: String, particleScaleInfo: [String: Float] = [:]) {
         self.modelName = modelName
         self.displayName = displayName

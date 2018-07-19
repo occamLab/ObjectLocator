@@ -10,7 +10,15 @@ import SceneKit
 import ARKit
 import Firebase
 
-extension ViewController: VirtualObjectSelectionViewControllerDelegate, VirtualObjectManagerDelegate {
+extension ViewController: NewJobViewControllerDelegate, VirtualObjectManagerDelegate {
+
+    // MARK: - NewJobViewControllerDelegate
+
+    func newJobViewController(_: NewJobViewController, didRequestNewJob objectName: String) {
+        postNewJob(objectToFind: objectName)
+        announce(announcement: "Finding " + objectName)
+    }
+    
     // MARK: - VirtualObjectManager delegate callbacks
     
     func virtualObjectManager(_ manager: VirtualObjectManager, willLoad object: VirtualObject) {
@@ -41,14 +49,4 @@ extension ViewController: VirtualObjectSelectionViewControllerDelegate, VirtualO
     func virtualObjectManager(_ manager: VirtualObjectManager, couldNotPlace object: VirtualObject) {
         textManager.showMessage("CANNOT PLACE OBJECT\nTry moving left or right.")
     }
-    
-    // MARK: - VirtualObjectSelectionViewControllerDelegate
-
-    func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didSelectObjectAt index: Int, objectToFind: String!) {
-        postNewJob(objectToFind: objectToFind)
-    }
-
-    func virtualObjectSelectionViewController(_: VirtualObjectSelectionViewController, didDeselectObjectAt index: Int) {
-    }
-    
 }

@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		1137ED1F1F09BE0800F1A96E /* VirtualObjects.json in Resources */ = {isa = PBXBuildFile; fileRef = 1137ED1E1F09BE0800F1A96E /* VirtualObjects.json */; };
 		11BD822A1F09D750003F11C8 /* ViewController+ObjectSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 147D76491EFC36070000FEBF /* ViewController+ObjectSelection.swift */; };
-		147062641F06FA790003EE03 /* VirtualObjectSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 147062631F06FA790003EE03 /* VirtualObjectSelectionViewController.swift */; };
 		1488323F1EFC378A0043E0AB /* ViewController+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1488323E1EFC378A0043E0AB /* ViewController+Actions.swift */; };
 		148832491EFC3E520043E0AB /* ARSCNView+HitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 148832481EFC3E520043E0AB /* ARSCNView+HitTests.swift */; };
 		3929C48C1E89EC2C00E00B60 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3929C48B1E89EC2C00E00B60 /* AppDelegate.swift */; };
@@ -24,6 +23,7 @@
 		8255A9CB1F963B300064AD15 /* CurrentCoordinateInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8255A9CA1F963B300064AD15 /* CurrentCoordinateInfo.swift */; };
 		8255A9CD1F963B570064AD15 /* LocationInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8255A9CC1F963B570064AD15 /* LocationInfo.swift */; };
 		8255A9CF1F963B780064AD15 /* JobInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8255A9CE1F963B780064AD15 /* JobInfo.swift */; };
+		8276E5832100ECAD00050AF5 /* NewJobViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8276E5822100ECAD00050AF5 /* NewJobViewController.swift */; };
 		8297D8AC20C59B00009F731A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8297D8AB20C59B00009F731A /* GoogleService-Info.plist */; };
 		82F8EE011F39FAC200ED7EEB /* VectorMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F8EE001F39FAC200ED7EEB /* VectorMath.swift */; };
 		C41366B91EB80DD400EC054A /* TextManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41366B81EB80DD400EC054A /* TextManager.swift */; };
@@ -35,7 +35,6 @@
 /* Begin PBXFileReference section */
 		11063F3B1EBE651B0033EE6D /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		1137ED1E1F09BE0800F1A96E /* VirtualObjects.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = VirtualObjects.json; sourceTree = "<group>"; };
-		147062631F06FA790003EE03 /* VirtualObjectSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualObjectSelectionViewController.swift; sourceTree = "<group>"; };
 		147D76491EFC36070000FEBF /* ViewController+ObjectSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+ObjectSelection.swift"; sourceTree = "<group>"; };
 		1488323E1EFC378A0043E0AB /* ViewController+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+Actions.swift"; sourceTree = "<group>"; };
 		148832481EFC3E520043E0AB /* ARSCNView+HitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ARSCNView+HitTests.swift"; sourceTree = "<group>"; };
@@ -52,6 +51,7 @@
 		8255A9CA1F963B300064AD15 /* CurrentCoordinateInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentCoordinateInfo.swift; sourceTree = "<group>"; };
 		8255A9CC1F963B570064AD15 /* LocationInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationInfo.swift; sourceTree = "<group>"; };
 		8255A9CE1F963B780064AD15 /* JobInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobInfo.swift; sourceTree = "<group>"; };
+		8276E5822100ECAD00050AF5 /* NewJobViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewJobViewController.swift; sourceTree = "<group>"; };
 		8297D8AB20C59B00009F731A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		82AB67221F4CBA8400DB7F3D /* ObjectLocator.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ObjectLocator.entitlements; sourceTree = "<group>"; };
 		82F8EE001F39FAC200ED7EEB /* VectorMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VectorMath.swift; sourceTree = "<group>"; };
@@ -111,7 +111,7 @@
 		1488324B1EFC3EBF0043E0AB /* Additional View Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				147062631F06FA790003EE03 /* VirtualObjectSelectionViewController.swift */,
+				8276E5822100ECAD00050AF5 /* NewJobViewController.swift */,
 			);
 			path = "Additional View Controllers";
 			sourceTree = "<group>";
@@ -356,10 +356,10 @@
 				11BD822A1F09D750003F11C8 /* ViewController+ObjectSelection.swift in Sources */,
 				1488323F1EFC378A0043E0AB /* ViewController+Actions.swift in Sources */,
 				3929C48E1E89EC2C00E00B60 /* ViewController.swift in Sources */,
+				8276E5832100ECAD00050AF5 /* NewJobViewController.swift in Sources */,
 				8255A9CD1F963B570064AD15 /* LocationInfo.swift in Sources */,
 				C41366B91EB80DD400EC054A /* TextManager.swift in Sources */,
 				39C0B95A1E9C6B1F003FCA0C /* Utilities.swift in Sources */,
-				147062641F06FA790003EE03 /* VirtualObjectSelectionViewController.swift in Sources */,
 				392BB82C1EA19A7C00FBBAC8 /* Plane.swift in Sources */,
 				82F8EE011F39FAC200ED7EEB /* VectorMath.swift in Sources */,
 				C4E87DD91EA6B40F002117D6 /* VirtualObject.swift in Sources */,

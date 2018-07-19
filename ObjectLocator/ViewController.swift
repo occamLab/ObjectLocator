@@ -16,7 +16,8 @@ import FirebaseAuthUI
 import FirebasePhoneAuthUI
 import Speech
 
-class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSpeechRecognizerDelegate, AVSpeechSynthesizerDelegate {
+class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, AVSpeechSynthesizerDelegate {
+
 
     func authUI(_ authUI: FUIAuth, didSignInWith user: User?, error: Error?) {
         if error != nil {
@@ -51,12 +52,8 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
     let useSpeechRecognizer = true
     // used when VoiceOver is not active
     let synth = AVSpeechSynthesizer()
-    private let speechRecognizer = SFSpeechRecognizer(locale: Locale(identifier: "en-US"))!
-    private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
-    private var recognitionTask: SFSpeechRecognitionTask?
     private let audioEngine = AVAudioEngine()
     var isReadingAnnouncement = false
-    var shouldResumeVoiceRecognition = false
     // this is to workaround a bug where VoiceOver will fail when turned on during speech recognition
     var startedVoiceOverDuringSpeechRecognition = false
     // MARK: - Virtual Object Manipulation Properties
@@ -224,118 +221,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
             selector: #selector(applicationDidBecomeActive(_:)),
             name: NSNotification.Name.UIApplicationDidBecomeActive,
             object: nil)
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.UIAccessibilityVoiceOverStatusDidChange, object: nil, queue: nil) { (notification) -> Void in
+            self.isReadingAnnouncement = false
+        }
     }
     
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {
         // make sure we reset this state when app is resumed
         isReadingAnnouncement = false
-        cleanupVoiceRecognition()
     }
 
-    public func startRecording() throws {
-        if recognitionTask != nil {
-            // can't run this twice in a row... TODO: consider disabling button
-            return
-        }
-        if isReadingAnnouncement {
-            // wait until announcement is finished
-            shouldResumeVoiceRecognition = true
-            return
-        }
-        let audioSession = AVAudioSession.sharedInstance()
-        try audioSession.setCategory(AVAudioSessionCategoryRecord)
-        try audioSession.setMode(AVAudioSessionModeMeasurement)
-        try audioSession.setActive(true, with: .notifyOthersOnDeactivation)
-        let inputNode = audioEngine.inputNode
-        recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
-        guard let recognitionRequest = recognitionRequest else { fatalError("Unable to created a SFSpeechAudioBufferRecognitionRequest object") }
-        
-        // Configure request so that results are returned before audio recording is finished
-        recognitionRequest.shouldReportPartialResults = true
-        var segmentsProcessed = 0
-        var pendingRequest = [String]()
-        var jobPostingTask: DispatchWorkItem?
-
-        // A recognition task represents a speech recognition session.
-        // We keep a reference to the task so that it can be cancelled.
-        recognitionTask = speechRecognizer.recognitionTask(with: recognitionRequest) { result, error in
-            var isFinal = false
-
-            if let result = result {
-                isFinal = result.isFinal
-                if !isFinal {
-                    for (idx, segment) in result.bestTranscription.segments[segmentsProcessed...].enumerated() {
-                        if segment.substring.caseInsensitiveCompare("snap") == ComparisonResult.orderedSame && segment.confidence > 0 {
-                            segmentsProcessed = idx + segmentsProcessed + 1
-                            if self.snapshotButton.isEnabled {
-                                self.handleSnapshot(self.snapshotButton)
-                            }
-                        }
-
-                        if segment.substring.caseInsensitiveCompare("stop") == ComparisonResult.orderedSame && segment.confidence > 0 {
-                            // bail and make sure we don't restart voice recognition accidentally
-                            self.shouldResumeVoiceRecognition = false
-                            isFinal = true
-                        }
-
-                        if segment.substring.caseInsensitiveCompare("find") == ComparisonResult.orderedSame {
-                            var firstUnconfident = result.bestTranscription.segments[(idx + segmentsProcessed + 1)...].index(where: {$0.confidence == 0})
-                            var allowableWords: [String]
-                            if firstUnconfident == nil {
-                                allowableWords = result.bestTranscription.segments[(idx + segmentsProcessed + 1)...].map({$0.substring})
-                                firstUnconfident = result.bestTranscription.segments.count - 1
-                            } else {
-                                allowableWords = result.bestTranscription.segments[(idx + segmentsProcessed + 1)...(firstUnconfident!)].map({$0.substring})
-                            }
-                            self.newTaskQueue.async {
-                                if allowableWords.count > pendingRequest.count {
-                                    // if the task was already pending, get rid of it
-                                    if jobPostingTask != nil {
-                                        jobPostingTask!.cancel()
-                                    }
-                                    pendingRequest = allowableWords
-                                    print("dispatching new job")
-                                    jobPostingTask = DispatchWorkItem {
-                                        let jobText = allowableWords.joined(separator:" ")
-                                        pendingRequest = []
-                                        segmentsProcessed = firstUnconfident!
-                                        self.postNewJob(objectToFind: jobText)
-                                        self.announce(announcement: "Finding " + jobText)
-                                    }
-                                    // wait to see if more words come in
-                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0, execute: jobPostingTask!)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if error != nil || isFinal {
-                // If we aren't planning on resuming voice recognition, then we got here due to an error, timeout, or stop request
-                if !self.shouldResumeVoiceRecognition {
-                    self.snapshotTimer?.invalidate()
-                    self.announce(announcement: "Voice recognition stopped.", overrideRestartVoiceOver: true, overrideStartVoiceOverValue: false)
-                }
-            }
-        }
-        let recordingFormat = inputNode.outputFormat(forBus: 0)
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer: AVAudioPCMBuffer, when: AVAudioTime) in
-            self.recognitionRequest?.append(buffer)
-        }
-        audioEngine.prepare()
-        try audioEngine.start()
-    }
-    
-    // MARK: SFSpeechRecognizerDelegate
-    
-    public func speechRecognizer(_ speechRecognizer: SFSpeechRecognizer, availabilityDidChange available: Bool) {
-        if available {
-            speechRecognitionAuthorized = true
-        } else {
-            speechRecognitionAuthorized = false
-        }
-    }
-    
     @objc func takeSnapshot(doAnnouncement: Bool = false) {
         // make sure we have a valid frame and a valid job without a placement
         guard let currentTransform = session.currentFrame?.camera.transform, currentJobUUID != nil, jobs[currentJobUUID!] != nil else {
@@ -409,25 +304,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
         }
         print("Announcing", announcement)
         if UIAccessibilityIsVoiceOverRunning() {
-            // make sure no one else starts an announcement
-            isReadingAnnouncement = true
-        }
-        if overrideRestartVoiceOver {
-            shouldResumeVoiceRecognition = overrideStartVoiceOverValue
-        } else {
-            shouldResumeVoiceRecognition = recognitionTask != nil
-        }
-        if recognitionTask != nil {
-            cleanupVoiceRecognition()
-        }
-        if UIAccessibilityIsVoiceOverRunning() {
             // use the VoiceOver API instead of text to speech
-            if startedVoiceOverDuringSpeechRecognition {
-                // Due to a bug that doesn't let VoiceOver properly setup when in record mode, we have to just give up here and avoid announcing anything.  Things will start working once the user activates an accessibility element
-                isReadingAnnouncement = false
-            } else {
-                UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement)
-            }
+            isReadingAnnouncement = true
+            UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, announcement)
         } else {
             let audioSession = AVAudioSession.sharedInstance()
             do {
@@ -464,54 +343,9 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
 			displayErrorMessage(title: "Unsupported platform", message: sessionErrorMsg, allowRestart: false)
 		}
         synth.delegate = self
-        if useSpeechRecognizer {
-            speechRecognizer.delegate = self
-            
-            SFSpeechRecognizer.requestAuthorization { authStatus in
-                /*
-                 The callback may not be called on the main thread. Add an
-                 operation to the main queue to update the record button's state.
-                 */
-                OperationQueue.main.addOperation {
-                    switch authStatus {
-                    case .authorized:
-                        self.speechRecognitionAuthorized = true
-                        
-                    case .denied:
-                        self.speechRecognitionAuthorized = false
-                        
-                    case .restricted:
-                        self.speechRecognitionAuthorized = false
-                        
-                    case .notDetermined:
-                        self.speechRecognitionAuthorized = false
-                    }
-                }
-            }
-        }
         NotificationCenter.default.addObserver(forName: NSNotification.Name.UIAccessibilityAnnouncementDidFinish, object: nil, queue: nil) { (notification) -> Void in
             self.isReadingAnnouncement = false
-            if self.shouldResumeVoiceRecognition {
-                self.shouldResumeVoiceRecognition = false
-                try! self.startRecording()
-            }
         }
-        NotificationCenter.default.addObserver(forName: NSNotification.Name.UIAccessibilityVoiceOverStatusDidChange, object: nil, queue: nil) { (notification) -> Void in
-            if self.recognitionTask != nil && UIAccessibilityIsVoiceOverRunning() {
-                print("SETTING FLAG")
-                self.startedVoiceOverDuringSpeechRecognition = true
-            }
-        }
-        
-        NotificationCenter.default.addObserver(forName: NSNotification.Name.UIAccessibilityElementFocused, object: nil, queue: nil) { (notification) -> Void in
-            // if an element is focused during playback mode, then we have sucessfully
-            // worked around a bug that prevents VoiceOver from properly starting up
-            // if it is activated during a voice recognition.
-            if AVAudioSession.sharedInstance().category == AVAudioSessionCategoryPlayback && AVAudioSession.sharedInstance().mode == AVAudioSessionModeDefault {
-                self.startedVoiceOverDuringSpeechRecognition = false
-            }
-        }
-        
 	}
 	
 	override func viewWillDisappear(_ animated: Bool) {
@@ -522,16 +356,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
     // MARK: - Speech Synthesizer Delegate
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer,
                            didFinish utterance: AVSpeechUtterance) {
-        if shouldResumeVoiceRecognition {
-            try! startRecording()
-        }
+        isReadingAnnouncement = false
     }
     
     func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer,
                            didCancel utterance: AVSpeechUtterance) {
-        if shouldResumeVoiceRecognition {
-            try! startRecording()
-        }
+        isReadingAnnouncement = false
     }
     
     // MARK: - Setup
@@ -657,20 +487,6 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
 		textManager.showMessage("RESETTING SESSION")
 	}
     
-    func cleanupVoiceRecognition() {
-        recognitionTask?.cancel()
-        recognitionRequest?.endAudio()
-        let inputNode = audioEngine.inputNode
-        inputNode.removeTap(onBus: 0)
-        audioEngine.stop()
-        
-        try! AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-        try! AVAudioSession.sharedInstance().setMode(AVAudioSessionModeDefault)
-
-        recognitionRequest = nil
-        recognitionTask = nil
-    }
-    
     var feedbackTimer: Date!
     var voiceTimer = [VirtualObject: Date]()
     @objc func getHapticFeedback() {
@@ -730,7 +546,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, SFSp
                 voiceTimer[object] = Date()
             }
         }
-        if !objectsToAnnounce.isEmpty && recognitionTask == nil {
+        if !objectsToAnnounce.isEmpty {
             announce(announcement: objectsToAnnounce)
         }
     }
