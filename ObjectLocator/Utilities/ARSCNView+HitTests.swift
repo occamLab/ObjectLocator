@@ -11,18 +11,36 @@ extension ARSCNView {
     
     // MARK: - Types
     
+    /// A ray to use for hit testing
     struct HitTestRay {
+        /// the origin (x, y, z) of the ray
         let origin: float3
+        /// The direction of the ray
         let direction: float3
     }
     
+    /// A hit test resulting from intersecting a ray with tracked feature points
     struct FeatureHitTestResult {
+        /// The position computed by intersecting the ray with the feature points
         let position: float3
+        /// Distance along the ray where the hit was genereated
         let distanceToRayOrigin: Float
+        /// the location of the feature hit
         let featureHit: float3
+        /// The distance of the feature to the hit result
         let featureDistanceToHitResult: Float
     }
     
+    /// Unprojects a point from the 2D pixel coordinate system of the renderer to the 3D
+    /// world coordinate system of the scene.  This modifies the typical behavior by
+    /// allowing for an override of the frame transform so that the unprojection can be
+    /// done with respect to past frames.
+    /// - Parameters:
+    ///   - point: the point to unproject (if z is 0 use the near clipping plane, if z
+    ///       is 1 use the far clipping plane)
+    ///   - overrideFrameTransform: an optional frame transform to use instead of the
+    ///       current frame transform
+    /// - Returns: the 3D coordinates of the pixel location
     func unprojectPoint(_ point: float3, overrideFrameTransform: matrix_float4x4? = nil) -> float3 {
         if let currentFrame = self.session.currentFrame {
             let cameraTransformToUse: matrix_float4x4
@@ -49,6 +67,14 @@ extension ARSCNView {
     
     // MARK: - Hit Tests
     
+    /// Create a hit test ray suitable for intersecting with various 3D structures such
+    /// as planes and feature points.
+    ///
+    /// - Parameters:
+    ///   - point: the point (2D) to use for creating the ray
+    ///   - overrideFrameTransform: if set, use the specified frame transform instead
+    ///        of the one of the current frame.
+    /// - Returns: a hit test ray (consisting of an origin and a direction in 3D).
     func hitTestRayFromScreenPos(_ point: CGPoint,                              overrideFrameTransform: matrix_float4x4? = nil) -> HitTestRay? {
         let cameraPos: float3
 
@@ -69,6 +95,13 @@ extension ARSCNView {
         return HitTestRay(origin: cameraPos, direction: rayDirection)
     }
     
+    /// Perform a hit test with an infinite horizontal plane (e.g., the ground plane)
+    ///
+    /// - Parameters:
+    ///   - point: the point to test for intersection with the plane
+    ///   - pointOnPlane: the position of the plane (only the y coordinate is used since
+    ///       we assume the plane is horizontal and infinite)
+    /// - Returns: the results of the hit test
     func hitTestWithInfiniteHorizontalPlane(_ point: CGPoint, _ pointOnPlane: float3) -> float3? {
         guard let ray = hitTestRayFromScreenPos(point) else {
             return nil
@@ -84,6 +117,15 @@ extension ARSCNView {
         return rayIntersectionWithHorizontalPlane(rayOrigin: ray.origin, direction: ray.direction, planeY: pointOnPlane.y)
     }
     
+    /// Perform a hit test with the feature points (yellow dots) tracked frame to frame
+    ///
+    /// - Parameters:
+    ///   - point: the 2D pixel location
+    ///   - coneOpeningAngleInDegrees: the cone in which to search for feature points
+    ///   - minDistance: the minimum distance to consider a feature point for a match
+    ///   - maxDistance: the maximum distance to consider a feature point for a match
+    ///   - maxResults: the maximum number of potential hits to return
+    /// - Returns: the results of the hit test as a list of potential feature point hits
     func hitTestWithFeatures(_ point: CGPoint, coneOpeningAngleInDegrees: Float,
                              minDistance: Float = 0,
                              maxDistance: Float = Float.greatestFiniteMagnitude,
@@ -148,6 +190,10 @@ extension ARSCNView {
         return cappedResults
     }
     
+    /// Perform a hit test on the scene with the specified pixel coordinate
+    ///
+    /// - Parameter point: the pixel coordinate (2D)
+    /// - Returns: an array of potential feature point hits
     func hitTestWithFeatures(_ point: CGPoint) -> [FeatureHitTestResult] {
         
         var results = [FeatureHitTestResult]()
@@ -163,6 +209,12 @@ extension ARSCNView {
         return results
     }
     
+    /// Hit test from a different origin (not necessarily the current position)
+    ///
+    /// - Parameters:
+    ///   - origin: the origin to start from
+    ///   - direction: the direction to search in
+    /// - Returns: any feature points that are potential hits
     func hitTestFromOrigin(origin: float3, direction: float3) -> FeatureHitTestResult? {
         
         guard let features = self.session.currentFrame?.rawFeaturePoints else {

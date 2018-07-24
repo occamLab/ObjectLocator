@@ -12,6 +12,7 @@ import ARKit
 
 extension ARSCNView {
 	
+    /// Setup the ARSCNView by tweaking some camera settings
 	func setup() {
 		antialiasingMode = .multisampling4X
 		automaticallyUpdatesLighting = false
@@ -25,21 +26,6 @@ extension ARSCNView {
 			camera.exposureOffset = -1
 			camera.minimumExposure = -1
 			camera.maximumExposure = 3
-		}
-	}
-}
-
-// MARK: - Scene extensions
-
-extension SCNScene {
-	func enableEnvironmentMapWithIntensity(_ intensity: CGFloat, queue: DispatchQueue) {
-		queue.async {
-			if self.lightingEnvironment.contents == nil {
-				if let environmentMap = UIImage(named: "Models.scnassets/sharedImages/environment_blur.exr") {
-					self.lightingEnvironment.contents = environmentMap
-				}
-			}
-			self.lightingEnvironment.intensity = intensity
 		}
 	}
 }

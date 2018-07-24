@@ -10,14 +10,14 @@ import SceneKit
 
 extension ViewController: UIPopoverPresentationControllerDelegate {
     
-    enum SegueIdentifier: String {
-        case showSettings
-        case showObjects
-    }
-    
     // MARK: - Interface Actions
     
-    
+    /// Restart the experience.  This function does following things.
+    /// * Tells the user the session is restarting
+    /// * Temporarily disables the add object button
+    /// * clears all placed virtual objects
+    ///
+    /// - Parameter sender: the sender that caused the restart
     @IBAction func restartExperience(_ sender: Any) {
         
         guard restartExperienceButtonIsEnabled, !isLoadingObject else { return }
@@ -46,10 +46,19 @@ extension ViewController: UIPopoverPresentationControllerDelegate {
     
     // MARK: - UIPopoverPresentationControllerDelegate
     
+    /// Makes sure that popovers are not modal
+    ///
+    /// - Parameter controller: the presentation controller
+    /// - Returns: whether or not to use modal style
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
         return .none
     }
     
+    /// Ensures that all popover segues are popovers (note: I don't quite understand when this would *not* be the case)
+    ///
+    /// - Parameters:
+    ///   - segue: the segue
+    ///   - sender: the sender who generated this prepare call
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         // All popover segues should be popovers even on iPhone.

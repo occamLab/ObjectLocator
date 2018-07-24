@@ -8,13 +8,24 @@
 
 import Foundation
 
+/// Struct to store position information and yaw
 public struct LocationInfo {
-    //  Struct to store position information and yaw
+    /// the x position
     public var x: Float
+    /// the y position
     public var y: Float
+    /// the z position
     public var z: Float
+    /// the yaw (rotation about the axis of gravity)
     public var yaw: Float
     
+    /// Initialize a LocationInfo
+    ///
+    /// - Parameters:
+    ///   - x: x coordinate
+    ///   - y: y coordinate
+    ///   - z: z coordinate
+    ///   - yaw: yaw (angle about the axis of gravity)
     public init(x: Float, y: Float, z: Float, yaw: Float) {
         self.x = x
         self.y = y

@@ -187,7 +187,6 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="5Yu-9d-EfX"/>
                                     <constraint firstAttribute="width" constant="239" id="F3s-en-pNg"/>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="260" id="oH7-zh-f8K"/>
                                 </constraints>
                                 <nil key="textColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -196,7 +195,6 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="eNc-Be-TCG" firstAttribute="top" secondItem="0dj-hp-mYW" secondAttribute="top" constant="20" id="6NY-6q-giW"/>
                             <constraint firstItem="eNc-Be-TCG" firstAttribute="top" secondItem="0dj-hp-mYW" secondAttribute="top" constant="10" id="8jp-Nx-2LT"/>
                             <constraint firstItem="Qms-x0-qle" firstAttribute="leading" secondItem="0dj-hp-mYW" secondAttribute="leading" constant="20" id="Fgj-Rs-n57"/>
                             <constraint firstItem="Qms-x0-qle" firstAttribute="top" secondItem="eNc-Be-TCG" secondAttribute="bottom" constant="20" id="HpJ-bu-rOl"/>

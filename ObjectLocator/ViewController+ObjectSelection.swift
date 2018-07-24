@@ -14,6 +14,11 @@ extension ViewController: NewJobViewControllerDelegate, VirtualObjectManagerDele
 
     // MARK: - NewJobViewControllerDelegate
 
+    /// Handles the information from the NewJobViewController that the user has requested a job to be posted.
+    ///
+    /// - Parameters:
+    ///   - _: the job view controller itself
+    ///   - objectName: the name of the object to find
     func newJobViewController(_: NewJobViewController, didRequestNewJob objectName: String) {
         postNewJob(objectToFind: objectName)
         announce(announcement: "Finding " + objectName)
@@ -21,6 +26,11 @@ extension ViewController: NewJobViewControllerDelegate, VirtualObjectManagerDele
     
     // MARK: - VirtualObjectManager delegate callbacks
     
+    /// Called when the virtual object manager is loading an object.  Since this could be a long running operation (although it isn't given we only use a cube for our object now), display a spinner
+    ///
+    /// - Parameters:
+    ///   - manager: the virtual object manager
+    ///   - object: the virtual object that will load
     func virtualObjectManager(_ manager: VirtualObjectManager, willLoad object: VirtualObject) {
         DispatchQueue.main.async {
             // Show progress indicator
@@ -35,6 +45,11 @@ extension ViewController: NewJobViewControllerDelegate, VirtualObjectManagerDele
         }
     }
     
+    /// Called by the virtual object manager to signal that the object is done loading.  This allows the ViewController to remove the progress spinner
+    ///
+    /// - Parameters:
+    ///   - manager: the virtual object manager
+    ///   - object: the virtual object that has just loaded
     func virtualObjectManager(_ manager: VirtualObjectManager, didLoad object: VirtualObject) {
         DispatchQueue.main.async {
             self.isLoadingObject = false
@@ -44,9 +59,5 @@ extension ViewController: NewJobViewControllerDelegate, VirtualObjectManagerDele
             self.addObjectButton.setImage(#imageLiteral(resourceName: "add"), for: [])
             self.addObjectButton.setImage(#imageLiteral(resourceName: "addPressed"), for: [.highlighted])
         }
-    }
-    
-    func virtualObjectManager(_ manager: VirtualObjectManager, couldNotPlace object: VirtualObject) {
-        textManager.showMessage("CANNOT PLACE OBJECT\nTry moving left or right.")
     }
 }

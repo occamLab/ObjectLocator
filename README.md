@@ -46,4 +46,4 @@ when you were setting up/working on this, what errors and issues did you run int
 
 ## Known Issues
 
-* The ARSCNView currently locks up when lots of images are added to a job.
+* None

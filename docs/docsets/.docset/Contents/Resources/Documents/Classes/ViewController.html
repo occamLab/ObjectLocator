@@ -1,0 +1,3089 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ViewController Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/ViewController" class="dashAnchor"></a>
+    <a title="ViewController Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html"> Docs</a> (100% documented)</p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html"> Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        ViewController Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/AppDelegate.html">AppDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/NewJobViewController.html">NewJobViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Plane.html">Plane</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/TextManager.html">TextManager</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ViewController.html">ViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/VirtualObject.html">VirtualObject</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/VirtualObjectManager.html">VirtualObjectManager</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enumerations</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/JobStatus.html">JobStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/MessageType.html">MessageType</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Extensions.html">Extensions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Extensions/ARCamera.html">ARCamera</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/ARCamera/TrackingState.html">– TrackingState</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/ARSCNView.html">ARSCNView</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/ARSCNView/HitTestRay.html">– HitTestRay</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/ARSCNView/FeatureHitTestResult.html">– FeatureHitTestResult</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/Array.html">Array</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/CGPoint.html">CGPoint</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/CGRect.html">CGRect</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/CGSize.html">CGSize</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/RangeReplaceableCollection.html">RangeReplaceableCollection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/SCNNode.html">SCNNode</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/UIViewController.html">UIViewController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Extensions/float4x4.html">float4x4</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Functions.html">Functions</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Functions.html#/s:13ObjectLocator34rayIntersectionWithHorizontalPlane4simd6float3VSgAE0C6Origin_AE9directionSf6planeYtF">rayIntersectionWithHorizontalPlane(rayOrigin:direction:planeY:)</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/NewJobViewControllerDelegate.html">NewJobViewControllerDelegate</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Protocols/VirtualObjectManagerDelegate.html">VirtualObjectManagerDelegate</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Structs.html">Structures</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Structs/CurrentCoordinateInfo.html">CurrentCoordinateInfo</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/JobInfo.html">JobInfo</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/JobResponse.html">JobResponse</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Structs/LocationInfo.html">LocationInfo</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>ViewController</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight swift"><code><span class="kd">class</span> <span class="kt">ViewController</span> <span class="p">:</span> <span class="kt">UIViewController</span><span class="p">,</span> <span class="kt">ARSCNViewDelegate</span><span class="p">,</span> <span class="kt">FUIAuthDelegate</span><span class="p">,</span> <span class="kt">AVSpeechSynthesizerDelegate</span></code></pre>
+
+                </div>
+              </div>
+            <p>The main ViewController class handles the following major responsibilities.</p>
+
+<ul>
+<li>Interactions with Firebase</li>
+<li>AR tracking</li>
+<li>Capturing snapshots</li>
+<li>Handling responses from crowd volunteers</li>
+</ul>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Outlets%20to%20the%20various%20views%20that%20comprise%20the%20app&#39;s%20UI"></a>
+                <a name="//apple_ref/swift/Section/Outlets to the various views that comprise the app&#39;s UI" class="dashAnchor"></a>
+                <a href="#/Outlets%20to%20the%20various%20views%20that%20comprise%20the%20app&#39;s%20UI">
+                  <h3 class="section-name">Outlets to the various views that comprise the app&#39;s UI</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(py)feedbackMode"></a>
+                    <a name="//apple_ref/swift/Property/feedbackMode" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(py)feedbackMode">feedbackMode</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The switch that toggles between 2D and 3D feedback mode.  When the toggle is on, that corresponds to 3D feedback mode.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@IBOutlet</span>
+<span class="k">weak</span> <span class="k">var</span> <span class="nv">feedbackMode</span><span class="p">:</span> <span class="kt">UISwitch</span><span class="o">!</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(py)sceneView"></a>
+                    <a name="//apple_ref/swift/Property/sceneView" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(py)sceneView">sceneView</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The main view that captures the AR scene and controls world tracking</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@IBOutlet</span>
+<span class="k">var</span> <span class="nv">sceneView</span><span class="p">:</span> <span class="kt">ARSCNView</span><span class="o">!</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(py)messagePanel"></a>
+                    <a name="//apple_ref/swift/Property/messagePanel" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(py)messagePanel">messagePanel</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The panel that contains the messages displayed to the user</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@IBOutlet</span>
+<span class="k">weak</span> <span class="k">var</span> <span class="nv">messagePanel</span><span class="p">:</span> <span class="kt">UIView</span><span class="o">!</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(py)messageLabel"></a>
+                    <a name="//apple_ref/swift/Property/messageLabel" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(py)messageLabel">messageLabel</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Messages displayed to the user (e.g., related to AR session status)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@IBOutlet</span>
+<span class="k">weak</span> <span class="k">var</span> <span class="nv">messageLabel</span><span class="p">:</span> <span class="kt">UILabel</span><span class="o">!</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(py)addObjectButton"></a>
+                    <a name="//apple_ref/swift/Property/addObjectButton" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(py)addObjectButton">addObjectButton</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A button that activates the interface where the user can initiate a job to find a new object</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@IBOutlet</span>
+<span class="k">weak</span> <span class="k">var</span> <span class="nv">addObjectButton</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(py)restartExperienceButton"></a>
+                    <a name="//apple_ref/swift/Property/restartExperienceButton" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(py)restartExperienceButton">restartExperienceButton</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A button that restarts the AR session and deletes all localized objects</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@IBOutlet</span>
+<span class="k">weak</span> <span class="k">var</span> <span class="nv">restartExperienceButton</span><span class="p">:</span> <span class="kt">UIButton</span><span class="o">!</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC7spinnerSo019UIActivityIndicatorC0CSgvp"></a>
+                    <a name="//apple_ref/swift/Property/spinner" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC7spinnerSo019UIActivityIndicatorC0CSgvp">spinner</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Communicates that a virtual object is in the process of being placed into the environment</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">spinner</span><span class="p">:</span> <span class="kt">UIActivityIndicatorView</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/ARKit%20Config%20Properties"></a>
+                <a name="//apple_ref/swift/Section/ARKit Config Properties" class="dashAnchor"></a>
+                <a href="#/ARKit%20Config%20Properties">
+                  <h3 class="section-name">ARKit Config Properties</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC7sessionSo9ARSessionCvp"></a>
+                    <a name="//apple_ref/swift/Property/session" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC7sessionSo9ARSessionCvp">session</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The ARSession that handles tracking and 3D structure estimation</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">let</span> <span class="nv">session</span><span class="p">:</span> <span class="kt">ARSession</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC21standardConfigurationSo015ARWorldTrackingF0Cvp"></a>
+                    <a name="//apple_ref/swift/Property/standardConfiguration" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC21standardConfigurationSo015ARWorldTrackingF0Cvp">standardConfiguration</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The standard ARSession configuration.  The configuration uses 6DOF tracking as
+well as horizontal and vertical (when available) plane detection</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">let</span> <span class="nv">standardConfiguration</span><span class="p">:</span> <span class="kt">ARWorldTrackingConfiguration</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC19sessionRestartTimerSo0G0CSgvp"></a>
+                    <a name="//apple_ref/swift/Property/sessionRestartTimer" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC19sessionRestartTimerSo0G0CSgvp">sessionRestartTimer</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A timer to coordinate restarting the ARSession if tracking has been bad for more than 10 seconds.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">sessionRestartTimer</span><span class="p">:</span> <span class="kt">Timer</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC13resetTrackingyyF"></a>
+                    <a name="//apple_ref/swift/Method/resetTracking()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC13resetTrackingyyF">resetTracking()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Resets (or starts) the tracking session</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">resetTracking</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Properties%20and%20methods%20for%20handling%20both%20haptic%20and%20speech%20feedback"></a>
+                <a name="//apple_ref/swift/Section/Properties and methods for handling both haptic and speech feedback" class="dashAnchor"></a>
+                <a href="#/Properties%20and%20methods%20for%20handling%20both%20haptic%20and%20speech%20feedback">
+                  <h3 class="section-name">Properties and methods for handling both haptic and speech feedback</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC8announceySS12announcement_tF"></a>
+                    <a name="//apple_ref/swift/Method/announce(announcement:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC8announceySS12announcement_tF">announce(announcement:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Communicates a message to the user via speech.  If VoiceOver is active, then VoiceOver is used
+to communicate the announcement, otherwise we use the AVSpeechEngine</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">announce</span><span class="p">(</span><span class="nv">announcement</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>announcement</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the text to read to the user</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC04lastA17AnnouncementTimess10DictionaryVyAA07VirtualA0C10Foundation4DateVGvp"></a>
+                    <a name="//apple_ref/swift/Property/lastObjectAnnouncementTimes" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC04lastA17AnnouncementTimess10DictionaryVyAA07VirtualA0C10Foundation4DateVGvp">lastObjectAnnouncementTimes</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Keeps track of the last time the name of a particular object was announced</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">lastObjectAnnouncementTimes</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Classes/VirtualObject.html">VirtualObject</a></span> <span class="p">:</span> <span class="kt">Date</span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC5synthSo19AVSpeechSynthesizerCvp"></a>
+                    <a name="//apple_ref/swift/Property/synth" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC5synthSo19AVSpeechSynthesizerCvp">synth</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>When VoiceOver is not active, we use AVSpeechSynthesizer for speech feedback</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">let</span> <span class="nv">synth</span><span class="p">:</span> <span class="kt">AVSpeechSynthesizer</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC21isReadingAnnouncementSbvp"></a>
+                    <a name="//apple_ref/swift/Property/isReadingAnnouncement" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC21isReadingAnnouncementSbvp">isReadingAnnouncement</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A Boolean flag that tracks whether or not something is currently being read to the user.  If something is
+being read, we avoid interrupting the announcement (TODO: we might want to interrupt for certain things
+(e.g., when you first find an object).</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">isReadingAnnouncement</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC11hapticTimerSQySo0F0CGvp"></a>
+                    <a name="//apple_ref/swift/Property/hapticTimer" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC11hapticTimerSQySo0F0CGvp">hapticTimer</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A timer that checks at a rate of 100 Hz whether a haptic feedback should be generated</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">hapticTimer</span><span class="p">:</span> <span class="kt">Timer</span><span class="o">!</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC27lastGeneratedHapticFeedbackSQy10Foundation4DateVGvp"></a>
+                    <a name="//apple_ref/swift/Property/lastGeneratedHapticFeedback" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC27lastGeneratedHapticFeedbackSQy10Foundation4DateVGvp">lastGeneratedHapticFeedback</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>the last time haptic feedback was generated for the user</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">lastGeneratedHapticFeedback</span><span class="p">:</span> <span class="kt">Date</span><span class="o">!</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)getHapticFeedback"></a>
+                    <a name="//apple_ref/swift/Method/getHapticFeedback()" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)getHapticFeedback">getHapticFeedback()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Checks if we should announce the name of an object and/or provide haptic feedback to the user.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">func</span> <span class="nf">getHapticFeedback</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC17feedbackGeneratorSo016UIImpactFeedbackF0Cvp"></a>
+                    <a name="//apple_ref/swift/Property/feedbackGenerator" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC17feedbackGeneratorSo016UIImpactFeedbackF0Cvp">feedbackGenerator</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Allows haptic feedback to be communicated to the user</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">let</span> <span class="nv">feedbackGenerator</span><span class="p">:</span> <span class="kt">UIImpactFeedbackGenerator</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Speech%20Synthesizer%20Delegate"></a>
+                <a name="//apple_ref/swift/Section/Speech Synthesizer Delegate" class="dashAnchor"></a>
+                <a href="#/Speech%20Synthesizer%20Delegate">
+                  <h3 class="section-name">Speech Synthesizer Delegate</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)speechSynthesizer:didFinishSpeechUtterance:"></a>
+                    <a name="//apple_ref/swift/Method/speechSynthesizer(_:didFinish:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)speechSynthesizer:didFinishSpeechUtterance:">speechSynthesizer(_:didFinish:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when an utterance is finished.  We implement this function so that we can keep track of
+whether or not an announcement is currently being read to the user.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">speechSynthesizer</span><span class="p">(</span><span class="n">_</span> <span class="nv">synthesizer</span><span class="p">:</span> <span class="kt">AVSpeechSynthesizer</span><span class="p">,</span>
+                       <span class="n">didFinish</span> <span class="nv">utterance</span><span class="p">:</span> <span class="kt">AVSpeechUtterance</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>synthesizer</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the synthesizer that finished the utterance</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>utterance</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the utterance itself</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)speechSynthesizer:didCancelSpeechUtterance:"></a>
+                    <a name="//apple_ref/swift/Method/speechSynthesizer(_:didCancel:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)speechSynthesizer:didCancelSpeechUtterance:">speechSynthesizer(_:didCancel:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when an utterance is canceled.  We implement this function so that we can keep track of
+whether or not an announcement is currently being read to the user.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">speechSynthesizer</span><span class="p">(</span><span class="n">_</span> <span class="nv">synthesizer</span><span class="p">:</span> <span class="kt">AVSpeechSynthesizer</span><span class="p">,</span>
+                       <span class="n">didCancel</span> <span class="nv">utterance</span><span class="p">:</span> <span class="kt">AVSpeechUtterance</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>synthesizer</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the synthesizer that finished the utterance</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>utterance</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the utterance itself</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Virtual%20Object%20Manipulation%20Properties"></a>
+                <a name="//apple_ref/swift/Section/Virtual Object Manipulation Properties" class="dashAnchor"></a>
+                <a href="#/Virtual%20Object%20Manipulation%20Properties">
+                  <h3 class="section-name">Virtual Object Manipulation Properties</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC07virtualA7ManagerSQyAA07VirtualaF0CGvp"></a>
+                    <a name="//apple_ref/swift/Property/virtualObjectManager" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC07virtualA7ManagerSQyAA07VirtualaF0CGvp">virtualObjectManager</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The virtual object manager which controls which objects have been placed into the AR session</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">virtualObjectManager</span><span class="p">:</span> <span class="kt"><a href="../Classes/VirtualObjectManager.html">VirtualObjectManager</a></span><span class="o">!</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC09isLoadingA0Sbvp"></a>
+                    <a name="//apple_ref/swift/Property/isLoadingObject" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC09isLoadingA0Sbvp">isLoadingObject</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A Boolean indicating whether an object is currently being loaded and placed in the scene
+This variable also automatically disables the restart experience and add object button
+when the flag gets set to true.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">isLoadingObject</span><span class="p">:</span> <span class="nf">Bool</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Other%20Properties"></a>
+                <a name="//apple_ref/swift/Section/Other Properties" class="dashAnchor"></a>
+                <a href="#/Other%20Properties">
+                  <h3 class="section-name">Other Properties</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC11textManagerSQyAA04TextF0CGvp"></a>
+                    <a name="//apple_ref/swift/Property/textManager" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC11textManagerSQyAA04TextF0CGvp">textManager</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The text manager that handles showing various informational messages to the user</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">textManager</span><span class="p">:</span> <span class="kt"><a href="../Classes/TextManager.html">TextManager</a></span><span class="o">!</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC32restartExperienceButtonIsEnabledSbvp"></a>
+                    <a name="//apple_ref/swift/Property/restartExperienceButtonIsEnabled" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC32restartExperienceButtonIsEnabledSbvp">restartExperienceButtonIsEnabled</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A flag that controls whether the restart experience button is enabled (it can be disabled, for example, when the session is restarting</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">restartExperienceButtonIsEnabled</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Firebase%20handles"></a>
+                <a name="//apple_ref/swift/Section/Firebase handles" class="dashAnchor"></a>
+                <a href="#/Firebase%20handles">
+                  <h3 class="section-name">Firebase handles</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC2dbSo8DatabaseCSgvp"></a>
+                    <a name="//apple_ref/swift/Property/db" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC2dbSo8DatabaseCSgvp">db</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A handle the Firebase realtime database</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">db</span><span class="p">:</span> <span class="kt">Database</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC10storageRefSo16StorageReferenceCSgvp"></a>
+                    <a name="//apple_ref/swift/Property/storageRef" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC10storageRefSo16StorageReferenceCSgvp">storageRef</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A handle the Firebase storage service</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">storageRef</span><span class="p">:</span> <span class="kt">StorageReference</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC9observersSaySo17DatabaseReferenceCSgGvp"></a>
+                    <a name="//apple_ref/swift/Property/observers" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC9observersSaySo17DatabaseReferenceCSgGvp">observers</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The database observers that have been created.  We maintain a list of these so that we can clear them if the user logs out</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">observers</span><span class="p">:</span> <span class="p">[</span><span class="kt">DatabaseReference</span><span class="p">?]</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC4authSo4AuthCvp"></a>
+                    <a name="//apple_ref/swift/Property/auth" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC4authSo4AuthCvp">auth</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A handle the Firebase authentication service</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">lazy</span> <span class="k">var</span> <span class="nv">auth</span><span class="p">:</span> <span class="nf">Auth</span> <span class="p">{</span> <span class="k">get</span> <span class="k">set</span> <span class="p">}</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC6authUISo7FUIAuthCSgvp"></a>
+                    <a name="//apple_ref/swift/Property/authUI" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC6authUISo7FUIAuthCSgvp">authUI</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The authentication UI (currently handled by <a href="https://github.com/firebase/FirebaseUI-iOS">FirebaseUI</a>)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">authUI</span><span class="p">:</span> <span class="kt">FUIAuth</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC5loginyyF"></a>
+                    <a name="//apple_ref/swift/Method/login()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC5loginyyF">login()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Displays the <a href="https://github.com/firebase/FirebaseUI-iOS">FirebaseUI</a> for authentication</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">login</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)authUI:didSignInWithUser:error:"></a>
+                    <a name="//apple_ref/swift/Method/authUI(_:didSignInWith:error:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)authUI:didSignInWithUser:error:">authUI(_:didSignInWith:error:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>A callback function to get the results from the FirebaseUI authentication interface</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">authUI</span><span class="p">(</span><span class="n">_</span> <span class="nv">authUI</span><span class="p">:</span> <span class="kt">FUIAuth</span><span class="p">,</span> <span class="n">didSignInWith</span> <span class="nv">user</span><span class="p">:</span> <span class="kt">User</span><span class="p">?,</span> <span class="nv">error</span><span class="p">:</span> <span class="kt">Error</span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>authUI</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the auth UI that the user signed in with.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>user</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the Firebase user object</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>error</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>an error message</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)handleLogout:"></a>
+                    <a name="//apple_ref/swift/Method/handleLogout(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)handleLogout:">handleLogout(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Handles the user clicking the <code>logout</code> button</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@IBAction</span>
+<span class="kd">func</span> <span class="nf">handleLogout</span><span class="p">(</span><span class="n">_</span> <span class="nv">sender</span><span class="p">:</span> <span class="kt">Any</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>sender</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the sender of this notification</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC20registerAuthListeneryyF"></a>
+                    <a name="//apple_ref/swift/Method/registerAuthListener()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC20registerAuthListeneryyF">registerAuthListener()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Listens to the Firebase authentication service to detect if the user&rsquo;s authentication state changes.  We use this to detect when the user signs in and when the sign out.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">registerAuthListener</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC14setupObserversyyF"></a>
+                    <a name="//apple_ref/swift/Method/setupObservers()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC14setupObserversyyF">setupObservers()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Setup the Firebase realtime database observers to pickup any new responses from the crowd volunteers</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">setupObservers</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Properties%20and%20methods%20that%20control%20mappping%20to%20and%20from%20Firebase%20and%20AR"></a>
+                <a name="//apple_ref/swift/Section/Properties and methods that control mappping to and from Firebase and AR" class="dashAnchor"></a>
+                <a href="#/Properties%20and%20methods%20that%20control%20mappping%20to%20and%20from%20Firebase%20and%20AR">
+                  <h3 class="section-name">Properties and methods that control mappping to and from Firebase and AR</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC4jobss10DictionaryVySSAA7JobInfoVGvp"></a>
+                    <a name="//apple_ref/swift/Property/jobs" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC4jobss10DictionaryVySSAA7JobInfoVGvp">jobs</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The jobs in process</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">jobs</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span> <span class="p">:</span> <span class="kt"><a href="../Structs/JobInfo.html">JobInfo</a></span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC10postNewJobySS12objectToFind_tF"></a>
+                    <a name="//apple_ref/swift/Method/postNewJob(objectToFind:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC10postNewJobySS12objectToFind_tF">postNewJob(objectToFind:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Post a new job with the specified name</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">postNewJob</span><span class="p">(</span><span class="nv">objectToFind</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>objectToFind</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the name of the object to find</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC19imageSequenceNumberSivp"></a>
+                    <a name="//apple_ref/swift/Property/imageSequenceNumber" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC19imageSequenceNumberSivp">imageSequenceNumber</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The image sequence number that allows any clients to order the images captured chronologically
+NOTE: this property is global for <em>all jobs</em> (i.e. it doesn&rsquo;t reset when a new job is added)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">imageSequenceNumber</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC14currentJobUUIDSSSgvp"></a>
+                    <a name="//apple_ref/swift/Property/currentJobUUID" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC14currentJobUUIDSSSgvp">currentJobUUID</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The UUID of the most recently created job.  This UUID is used to route newly captured snapshots to the
+appropriate place.  This means that new snapshots are only added to this most recent job.
+TODO: revisit whether images should be routed to older jobs.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">currentJobUUID</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)takeSnapshotWithDoAnnouncement:"></a>
+                    <a name="//apple_ref/swift/Method/takeSnapshot(doAnnouncement:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)takeSnapshotWithDoAnnouncement:">takeSnapshot(doAnnouncement:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Take a snapshot of the scene and add it to most recently created job.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">func</span> <span class="nf">takeSnapshot</span><span class="p">(</span><span class="nv">doAnnouncement</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>doAnnouncement</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>true if the system should announce that it has taken a snapshot</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC13snapshotTimerSo0F0CSgvp"></a>
+                    <a name="//apple_ref/swift/Property/snapshotTimer" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC13snapshotTimerSo0F0CSgvp">snapshotTimer</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The timer that allows for auto snapshotting of the environment when a job is active</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">snapshotTimer</span><span class="p">:</span> <span class="kt">Timer</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC14handleResponseySo12DataSnapshotC8snapshot_tF"></a>
+                    <a name="//apple_ref/swift/Method/handleResponse(snapshot:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC14handleResponseySo12DataSnapshotC8snapshot_tF">handleResponse(snapshot:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The function that handles any new localizations generated by the crowd volunteers.  This function performs
+the following steps.</p>
+
+<ul>
+<li>Parse the data from Firebase to determine which image was labeled, who did the localization, and extract the pixel location of the localization</li>
+<li>If this is the first response from a user, attempt to map the pixel location to 3D using the planes detected by the ARSession</li>
+<li>If unable to localize the object using the method above, wait for a second response</li>
+<li><p>Once two responses are generated by the same user, use triangulation to compute a 3D position.</p></li>
+</ul>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">handleResponse</span><span class="p">(</span><span class="nv">snapshot</span><span class="p">:</span> <span class="kt">DataSnapshot</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>snapshot</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>this will be a child of responses/{user.uid} corresponding to a particular job.  It will have all of the responses that have currently been generated for this particular job (not just the latest one).</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Queues"></a>
+                <a name="//apple_ref/swift/Section/Queues" class="dashAnchor"></a>
+                <a href="#/Queues">
+                  <h3 class="section-name">Queues</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC11serialQueueSo08DispatchF0CvpZ"></a>
+                    <a name="//apple_ref/swift/Variable/serialQueue" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC11serialQueueSo08DispatchF0CvpZ">serialQueue</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The serial queue handles computationally intensive rendering of various AR propreties</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">static</span> <span class="k">let</span> <span class="nv">serialQueue</span><span class="p">:</span> <span class="kt">DispatchQueue</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC11serialQueueSo08DispatchF0Cvp"></a>
+                    <a name="//apple_ref/swift/Property/serialQueue" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC11serialQueueSo08DispatchF0Cvp">serialQueue</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>An alias of the static variable <q>serialQueue</q> to allow for more readable access inside class</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">let</span> <span class="nv">serialQueue</span><span class="p">:</span> <span class="kt">DispatchQueue</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/View%20Controller%20Life%20Cycle"></a>
+                <a name="//apple_ref/swift/Section/View Controller Life Cycle" class="dashAnchor"></a>
+                <a href="#/View%20Controller%20Life%20Cycle">
+                  <h3 class="section-name">View Controller Life Cycle</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)viewDidLoad"></a>
+                    <a name="//apple_ref/swift/Method/viewDidLoad()" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)viewDidLoad">viewDidLoad()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Once the view is loaded properties, timers, and various handles are created.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)applicationDidBecomeActive:"></a>
+                    <a name="//apple_ref/swift/Method/applicationDidBecomeActive(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)applicationDidBecomeActive:">applicationDidBecomeActive(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Currently all this does is reset the property that tracks whether an announcement is being read.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">func</span> <span class="nf">applicationDidBecomeActive</span><span class="p">(</span><span class="n">_</span> <span class="nv">notification</span><span class="p">:</span> <span class="kt">NSNotification</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>notification</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the notification that caused the app to become active</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)viewDidAppear:"></a>
+                    <a name="//apple_ref/swift/Method/viewDidAppear(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)viewDidAppear:">viewDidAppear(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when the view appears on the screen.  Above what is done by the super class, this function does the following.</p>
+
+<ul>
+<li>Display an error message if the user&rsquo;s device doesn&rsquo;t support 6DOF tracking (e.g., for phones older than the iPhone 6S)</li>
+<li>Restart the tracking session</li>
+<li><p>Add a listener for the end of any VoiceOver announcements so we can note this.</p></li>
+</ul>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">override</span> <span class="kd">func</span> <span class="nf">viewDidAppear</span><span class="p">(</span><span class="n">_</span> <span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>animated</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>whether or not to animate</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)viewWillDisappear:"></a>
+                    <a name="//apple_ref/swift/Method/viewWillDisappear(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)viewWillDisappear:">viewWillDisappear(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Above and beyond what the super class does, this function will pause the ARSession</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">override</span> <span class="kd">func</span> <span class="nf">viewWillDisappear</span><span class="p">(</span><span class="n">_</span> <span class="nv">animated</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>animated</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>whether to animate the disappearance</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Setup"></a>
+                <a name="//apple_ref/swift/Section/Setup" class="dashAnchor"></a>
+                <a href="#/Setup">
+                  <h3 class="section-name">Setup</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC10setupSceneyyF"></a>
+                    <a name="//apple_ref/swift/Method/setupScene()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC10setupSceneyyF">setupScene()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Setup the ARSCNView by creating the object manager and setting various ARSCNView properties.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">setupScene</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC15setupUIControlsyyF"></a>
+                    <a name="//apple_ref/swift/Method/setupUIControls()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC15setupUIControlsyyF">setupUIControls()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Setup the text manager UI control</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">setupUIControls</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/ARSCNViewDelegate"></a>
+                <a name="//apple_ref/swift/Section/ARSCNViewDelegate" class="dashAnchor"></a>
+                <a href="#/ARSCNViewDelegate">
+                  <h3 class="section-name">ARSCNViewDelegate</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)renderer:updateAtTime:"></a>
+                    <a name="//apple_ref/swift/Method/renderer(_:updateAtTime:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)renderer:updateAtTime:">renderer(_:updateAtTime:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Responds to renderer updates to do fancy things like dynamic lighting (currently we aren&rsquo;t doing anything like this)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">renderer</span><span class="p">(</span><span class="n">_</span> <span class="nv">renderer</span><span class="p">:</span> <span class="kt">SCNSceneRenderer</span><span class="p">,</span> <span class="n">updateAtTime</span> <span class="nv">time</span><span class="p">:</span> <span class="kt">TimeInterval</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>renderer</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the renderer</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>time</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the udpate time</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)renderer:didAddNode:forAnchor:"></a>
+                    <a name="//apple_ref/swift/Method/renderer(_:didAdd:for:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)renderer:didAddNode:forAnchor:">renderer(_:didAdd:for:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Listen for new anchors that have been added to the ARSCNView.
+Currently, all we care about is whether the new node corresponds to a plane.  We use the detected
+planes to try to map 2D pixel locations to 3D locations.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">renderer</span><span class="p">(</span><span class="n">_</span> <span class="nv">renderer</span><span class="p">:</span> <span class="kt">SCNSceneRenderer</span><span class="p">,</span> <span class="n">didAdd</span> <span class="nv">node</span><span class="p">:</span> <span class="kt">SCNNode</span><span class="p">,</span> <span class="k">for</span> <span class="nv">anchor</span><span class="p">:</span> <span class="kt">ARAnchor</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>renderer</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the renderer</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>node</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the node added to the scene</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>anchor</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>any anchor (if applicable)</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)renderer:didUpdateNode:forAnchor:"></a>
+                    <a name="//apple_ref/swift/Method/renderer(_:didUpdate:for:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)renderer:didUpdateNode:forAnchor:">renderer(_:didUpdate:for:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Listen for anchors that have been updated in the ARSCNView.
+Currently, all we care about is whether the updated node corresponds to a plane.  We use the detected
+planes to try to map 2D pixel locations to 3D locations.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">renderer</span><span class="p">(</span><span class="n">_</span> <span class="nv">renderer</span><span class="p">:</span> <span class="kt">SCNSceneRenderer</span><span class="p">,</span> <span class="n">didUpdate</span> <span class="nv">node</span><span class="p">:</span> <span class="kt">SCNNode</span><span class="p">,</span> <span class="k">for</span> <span class="nv">anchor</span><span class="p">:</span> <span class="kt">ARAnchor</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>renderer</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the renderer</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>node</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the node updated in the scene</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>anchor</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>any anchor (if applicable)</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)renderer:didRemoveNode:forAnchor:"></a>
+                    <a name="//apple_ref/swift/Method/renderer(_:didRemove:for:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)renderer:didRemoveNode:forAnchor:">renderer(_:didRemove:for:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Listen for anchors that have been removed from the ARSCNView.
+Currently, all we care about is whether the removed node corresponds to a plane.  We use the detected
+planes to try to map 2D pixel locations to 3D locations.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">renderer</span><span class="p">(</span><span class="n">_</span> <span class="nv">renderer</span><span class="p">:</span> <span class="kt">SCNSceneRenderer</span><span class="p">,</span> <span class="n">didRemove</span> <span class="nv">node</span><span class="p">:</span> <span class="kt">SCNNode</span><span class="p">,</span> <span class="k">for</span> <span class="nv">anchor</span><span class="p">:</span> <span class="kt">ARAnchor</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>renderer</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the renderer</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>node</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the node removed from the scene</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>anchor</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>any anchor (if applicable)</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)session:cameraDidChangeTrackingState:"></a>
+                    <a name="//apple_ref/swift/Method/session(_:cameraDidChangeTrackingState:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)session:cameraDidChangeTrackingState:">session(_:cameraDidChangeTrackingState:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Listen for any state changes to the ARSession.
+This is useful for doing things like restarting a session after bad tracking and communicating warning messages to the user.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">session</span><span class="p">(</span><span class="n">_</span> <span class="nv">session</span><span class="p">:</span> <span class="kt">ARSession</span><span class="p">,</span> <span class="n">cameraDidChangeTrackingState</span> <span class="nv">camera</span><span class="p">:</span> <span class="kt">ARCamera</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>session</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the session object itself</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>camera</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the camera object</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)session:didFailWithError:"></a>
+                    <a name="//apple_ref/swift/Method/session(_:didFailWithError:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)session:didFailWithError:">session(_:didFailWithError:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Listen for any catastrophic failures of the ARSession.  These are communicated to the user via an alert, and the session is restarted.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">session</span><span class="p">(</span><span class="n">_</span> <span class="nv">session</span><span class="p">:</span> <span class="kt">ARSession</span><span class="p">,</span> <span class="n">didFailWithError</span> <span class="nv">error</span><span class="p">:</span> <span class="kt">Error</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>session</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the session object itself</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>camera</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the camera object</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)sessionWasInterrupted:"></a>
+                    <a name="//apple_ref/swift/Method/sessionWasInterrupted(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)sessionWasInterrupted:">sessionWasInterrupted(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when the session was interrupted.  Currently we just set blue the image.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">sessionWasInterrupted</span><span class="p">(</span><span class="n">_</span> <span class="nv">session</span><span class="p">:</span> <span class="kt">ARSession</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>session</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the session object</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@ObjectLocator@objc(cs)ViewController(im)sessionInterruptionEnded:"></a>
+                    <a name="//apple_ref/swift/Method/sessionInterruptionEnded(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@ObjectLocator@objc(cs)ViewController(im)sessionInterruptionEnded:">sessionInterruptionEnded(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when the session interruption has finished.  Currently we restart the ARSession at this point (since tracking state is likely not useful at this point).
+TODO: With ARKit2, we could probably recover from this</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">sessionInterruptionEnded</span><span class="p">(</span><span class="n">_</span> <span class="nv">session</span><span class="p">:</span> <span class="kt">ARSession</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>session</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the session object</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Planes"></a>
+                <a name="//apple_ref/swift/Section/Planes" class="dashAnchor"></a>
+                <a href="#/Planes">
+                  <h3 class="section-name">Planes</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC6planess10DictionaryVySo13ARPlaneAnchorCAA5PlaneCGvp"></a>
+                    <a name="//apple_ref/swift/Property/planes" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC6planess10DictionaryVySo13ARPlaneAnchorCAA5PlaneCGvp">planes</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>a dictionary that maps from ARPlaneAnchors to Plane objects (Plane objects integrate a SCNNode with the plane anchor)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">var</span> <span class="nv">planes</span><span class="p">:</span> <span class="p">[</span><span class="kt">ARPlaneAnchor</span> <span class="p">:</span> <span class="kt"><a href="../Classes/Plane.html">Plane</a></span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC8addPlaneySo7SCNNodeC4node_So13ARPlaneAnchorC6anchortF"></a>
+                    <a name="//apple_ref/swift/Method/addPlane(node:anchor:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC8addPlaneySo7SCNNodeC4node_So13ARPlaneAnchorC6anchortF">addPlane(node:anchor:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Adds a new plane to the virtual object manager</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">addPlane</span><span class="p">(</span><span class="nv">node</span><span class="p">:</span> <span class="kt">SCNNode</span><span class="p">,</span> <span class="nv">anchor</span><span class="p">:</span> <span class="kt">ARPlaneAnchor</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>node</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the scene node corresponding to the plane</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>anchor</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the plane anchor itself</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC11updatePlaneySo13ARPlaneAnchorC6anchor_tF"></a>
+                    <a name="//apple_ref/swift/Method/updatePlane(anchor:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC11updatePlaneySo13ARPlaneAnchorC6anchor_tF">updatePlane(anchor:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Update a plane in the virtual object manager</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">updatePlane</span><span class="p">(</span><span class="nv">anchor</span><span class="p">:</span> <span class="kt">ARPlaneAnchor</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>anchor</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the plane anchor itself</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC11removePlaneySo13ARPlaneAnchorC6anchor_tF"></a>
+                    <a name="//apple_ref/swift/Method/removePlane(anchor:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC11removePlaneySo13ARPlaneAnchorC6anchor_tF">removePlane(anchor:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Remove a plane in the virtual object manager</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">removePlane</span><span class="p">(</span><span class="nv">anchor</span><span class="p">:</span> <span class="kt">ARPlaneAnchor</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>anchor</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the plane anchor itself</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Error%20handling"></a>
+                <a name="//apple_ref/swift/Section/Error handling" class="dashAnchor"></a>
+                <a href="#/Error%20handling">
+                  <h3 class="section-name">Error handling</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC19displayErrorMessageySS5title_SS7messageSb12allowRestarttF"></a>
+                    <a name="//apple_ref/swift/Method/displayErrorMessage(title:message:allowRestart:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC19displayErrorMessageySS5title_SS7messageSb12allowRestarttF">displayErrorMessage(title:message:allowRestart:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Display an error message as an alert.  if allowedRestart is true, the user will
+have the option of restarting the experience.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">displayErrorMessage</span><span class="p">(</span><span class="nv">title</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">allowRestart</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>title</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the title of the alert</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>message</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the message body for the alert</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>allowRestart</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>true iff we should allow the user to restart the experience</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Interface%20Actions"></a>
+                <a name="//apple_ref/swift/Section/Interface Actions" class="dashAnchor"></a>
+                <a href="#/Interface%20Actions">
+                  <h3 class="section-name">Interface Actions</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@CM@ObjectLocator@objc(cs)ViewController(im)restartExperience:"></a>
+                    <a name="//apple_ref/swift/Method/restartExperience(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@CM@ObjectLocator@objc(cs)ViewController(im)restartExperience:">restartExperience(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Restart the experience.  This function does following things.</p>
+
+<ul>
+<li>Tells the user the session is restarting</li>
+<li>Temporarily disables the add object button</li>
+<li><p>clears all placed virtual objects</p></li>
+</ul>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@IBAction</span>
+<span class="kd">func</span> <span class="nf">restartExperience</span><span class="p">(</span><span class="n">_</span> <span class="nv">sender</span><span class="p">:</span> <span class="kt">Any</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>sender</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the sender that caused the restart</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/UIPopoverPresentationControllerDelegate"></a>
+                <a name="//apple_ref/swift/Section/UIPopoverPresentationControllerDelegate" class="dashAnchor"></a>
+                <a href="#/UIPopoverPresentationControllerDelegate">
+                  <h3 class="section-name">UIPopoverPresentationControllerDelegate</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@CM@ObjectLocator@objc(cs)ViewController(im)adaptivePresentationStyleForPresentationController:"></a>
+                    <a name="//apple_ref/swift/Method/adaptivePresentationStyle(for:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@CM@ObjectLocator@objc(cs)ViewController(im)adaptivePresentationStyleForPresentationController:">adaptivePresentationStyle(for:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Makes sure that popovers are not modal</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">adaptivePresentationStyle</span><span class="p">(</span><span class="k">for</span> <span class="nv">controller</span><span class="p">:</span> <span class="kt">UIPresentationController</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UIModalPresentationStyle</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>controller</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the presentation controller</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>whether or not to use modal style</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@CM@ObjectLocator@objc(cs)ViewController(im)prepareForSegue:sender:"></a>
+                    <a name="//apple_ref/swift/Method/prepare(for:sender:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@CM@ObjectLocator@objc(cs)ViewController(im)prepareForSegue:sender:">prepare(for:sender:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Ensures that all popover segues are popovers (note: I don&rsquo;t quite understand when this would <em>not</em> be the case)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">override</span> <span class="kd">func</span> <span class="nf">prepare</span><span class="p">(</span><span class="k">for</span> <span class="nv">segue</span><span class="p">:</span> <span class="kt">UIStoryboardSegue</span><span class="p">,</span> <span class="nv">sender</span><span class="p">:</span> <span class="kt">Any</span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>segue</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the segue</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>sender</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the sender who generated this prepare call</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/NewJobViewControllerDelegate"></a>
+                <a name="//apple_ref/swift/Section/NewJobViewControllerDelegate" class="dashAnchor"></a>
+                <a href="#/NewJobViewControllerDelegate">
+                  <h3 class="section-name">NewJobViewControllerDelegate</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC06newJobcD0yAA03NewfcD0C_SS010didRequestgF0tF"></a>
+                    <a name="//apple_ref/swift/Method/newJobViewController(_:didRequestNewJob:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC06newJobcD0yAA03NewfcD0C_SS010didRequestgF0tF">newJobViewController(_:didRequestNewJob:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Handles the information from the NewJobViewController that the user has requested a job to be posted.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">newJobViewController</span><span class="p">(</span><span class="nv">_</span><span class="p">:</span> <span class="kt"><a href="../Classes/NewJobViewController.html">NewJobViewController</a></span><span class="p">,</span> <span class="n">didRequestNewJob</span> <span class="nv">objectName</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>_</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the job view controller itself</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>objectName</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the name of the object to find</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/VirtualObjectManager%20delegate%20callbacks"></a>
+                <a name="//apple_ref/swift/Section/VirtualObjectManager delegate callbacks" class="dashAnchor"></a>
+                <a href="#/VirtualObjectManager%20delegate%20callbacks">
+                  <h3 class="section-name">VirtualObjectManager delegate callbacks</h3>
+                </a>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC07virtualA7ManageryAA07VirtualaF0C_AA0gA0C8willLoadtF"></a>
+                    <a name="//apple_ref/swift/Method/virtualObjectManager(_:willLoad:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC07virtualA7ManageryAA07VirtualaF0C_AA0gA0C8willLoadtF">virtualObjectManager(_:willLoad:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called when the virtual object manager is loading an object.  Since this could be a long running operation (although it isn&rsquo;t given we only use a cube for our object now), display a spinner</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">virtualObjectManager</span><span class="p">(</span><span class="n">_</span> <span class="nv">manager</span><span class="p">:</span> <span class="kt"><a href="../Classes/VirtualObjectManager.html">VirtualObjectManager</a></span><span class="p">,</span> <span class="n">willLoad</span> <span class="nv">object</span><span class="p">:</span> <span class="kt"><a href="../Classes/VirtualObject.html">VirtualObject</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>manager</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the virtual object manager</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>object</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the virtual object that will load</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:13ObjectLocator14ViewControllerC07virtualA7ManageryAA07VirtualaF0C_AA0gA0C7didLoadtF"></a>
+                    <a name="//apple_ref/swift/Method/virtualObjectManager(_:didLoad:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:13ObjectLocator14ViewControllerC07virtualA7ManageryAA07VirtualaF0C_AA0gA0C7didLoadtF">virtualObjectManager(_:didLoad:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Called by the virtual object manager to signal that the object is done loading.  This allows the ViewController to remove the progress spinner</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">virtualObjectManager</span><span class="p">(</span><span class="n">_</span> <span class="nv">manager</span><span class="p">:</span> <span class="kt"><a href="../Classes/VirtualObjectManager.html">VirtualObjectManager</a></span><span class="p">,</span> <span class="n">didLoad</span> <span class="nv">object</span><span class="p">:</span> <span class="kt"><a href="../Classes/VirtualObject.html">VirtualObject</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>manager</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the virtual object manager</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>object</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the virtual object that has just loaded</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2018 <a class="link" href="" target="_blank" rel="external"></a>. All rights reserved. (Last updated: 2018-07-24)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.9.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
