@@ -249,8 +249,8 @@ class VirtualObjectManager {
     func worldPositionFromStereoScreenPosition(pixel_location_1: CGPoint,
                                                pixel_location_2: CGPoint,
                                                in sceneView: ARSCNView,
-                                               frame_transform_1 : matrix_float4x4?,
-                                               frame_transform_2 : matrix_float4x4?,
+                                               frame_transform_1 : matrix_float4x4,
+                                               frame_transform_2 : matrix_float4x4,
                                                objectPos: float3?) -> (position: float3?, planeAnchor: ARPlaneAnchor?, hitAPlane: Bool) {
         // TODO:  In some cases an object sits high above a plane.  Such as a chair on the floor.  In this
         // case you want to first test for a feature point hit, and if the feature point is sufficiently
