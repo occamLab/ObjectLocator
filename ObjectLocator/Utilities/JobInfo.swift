@@ -30,7 +30,7 @@ enum JobStatus {
 }
 
 /// Tracks a job's data.
-public struct JobInfo {
+class JobInfo {
     /// A dictionary that maps from image UUIDs to camera transforms
     var cameraTransforms : [String: matrix_float4x4]
     /// A scene image snapshot used for dimension checking... TODO: Just store bounds
