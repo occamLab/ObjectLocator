@@ -168,15 +168,7 @@
 <li>Logout button (accessibility label <q>Logout</q>): logout of your account</li>
 <li>Restart button (accessibility label <q>Restart</q>): restart the AR session (should only be used if something major has gone wrong).  The button appears as a circular arrow.  TODO: we probably should just not have this button at all and manage the session automatically.</li>
 <li>3D Feedback toggle switch (accessibility Label <q>3D Feedback</q>). When this button is on, whether or not the phone is pointing at a located object and the distance to the object are determined using 3D coordinates.  If the button is off, these spatial features are computed in the plane of the floor (X-Z plane).</li>
-<li>Add button (accessibliity label: <q>Add</q>): The button appears as a plus.  This button starts an object finding session.  At this point, the app will enter speech recognition mode, whereby the UI will be controlled by speech input.</li>
-<li>Snapshot button (accessibility label: <q>Snapshot</q>): This button takes a picture and adds it to a localization job.  By default, the app will capture an image ever 2 seconds when a job has been posted, however, if the user wants to kick off their own image capture, this button can do that.</li>
-</ul>
-
-<p>The speech interface is activated using the <q>Add</q> button.  If the user has not spoken a command in over 60 seconds, the speech interface stops (it can be restarted with the <q>Add</q> button).</p>
-
-<ul>
-<li>To find an object say <q>Find [insert-object-name]</q></li>
-<li>To exit the speech interface say <q>Stop</q>.</li>
+<li>Add button (accessibliity label: <q>Find object</q>): The button appears as a plus.  This button brings up a text box that allows you to enter an object you&rsquo;d like to find.  To start the job, enter the object name (e.g., using dictation or the keyboard) and then hit the return key.</li>
 </ul>
 
 <p>TODO: How does it fit into other things we’re working on? Who’s involved, and when (e.g. “active as of summer 2018”)? </p>

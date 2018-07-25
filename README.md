@@ -16,12 +16,7 @@ Below, is a description of each button on the main UI along with a description o
 * Logout button (accessibility label "Logout"): logout of your account 
 * Restart button (accessibility label "Restart"): restart the AR session (should only be used if something major has gone wrong).  The button appears as a circular arrow.  TODO: we probably should just not have this button at all and manage the session automatically.
 * 3D Feedback toggle switch (accessibility Label "3D Feedback"). When this button is on, whether or not the phone is pointing at a located object and the distance to the object are determined using 3D coordinates.  If the button is off, these spatial features are computed in the plane of the floor (X-Z plane).
-* Add button (accessibliity label: "Add"): The button appears as a plus.  This button starts an object finding session.  At this point, the app will enter speech recognition mode, whereby the UI will be controlled by speech input.
-* Snapshot button (accessibility label: "Snapshot"): This button takes a picture and adds it to a localization job.  By default, the app will capture an image ever 2 seconds when a job has been posted, however, if the user wants to kick off their own image capture, this button can do that.
-
-The speech interface is activated using the "Add" button.  If the user has not spoken a command in over 60 seconds, the speech interface stops (it can be restarted with the "Add" button).
-* To find an object say "Find [insert-object-name]"
-* To exit the speech interface say "Stop".
+* Add button (accessibliity label: "Find object"): The button appears as a plus.  This button brings up a text box that allows you to enter an object you'd like to find.  To start the job, enter the object name (e.g., using dictation or the keyboard) and then hit the return key.
 
 TODO: How does it fit into other things we’re working on? Who’s involved, and when (e.g. “active as of summer 2018”)? 
 
