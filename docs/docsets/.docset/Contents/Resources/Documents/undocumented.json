@@ -1,19 +1,6 @@
 {
   "warnings": [
-    {
-      "file": "/Users/pruvolo/Downloads/Placing Objects.new/ObjectLocator/Utilities/ARSCNView+HitTests.swift",
-      "line": 98,
-      "symbol": "ARSCNView.hitTestWithInfiniteHorizontalPlane(_:_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/pruvolo/Downloads/Placing Objects.new/ObjectLocator/Utilities/ARSCNView+HitTests.swift",
-      "line": 113,
-      "symbol": "ARSCNView.hitTestWithFeatures(_:coneOpeningAngleInDegrees:minDistance:maxDistance:maxResults:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.instance",
-      "warning": "undocumented"
-    }
+
   ],
   "source_directory": "/Users/pruvolo/Downloads/Placing Objects.new"
 }

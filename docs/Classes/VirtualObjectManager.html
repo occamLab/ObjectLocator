@@ -606,9 +606,9 @@ has created and that have been successfully localized by crowd volunteers.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:13ObjectLocator07VirtualA7ManagerC023worldPositionFromScreenF04simd6float3VSg8position_So13ARPlaneAnchorCSg05planeM0Sb9hitAPlanetSC7CGPointV_So9ARSCNViewC2inSC0I9_float4x4VSg15frame_transformAH9objectPostF"></a>
+                    <a name="/s:13ObjectLocator07VirtualA7ManagerC023worldPositionFromScreenF04simd6float3VSg8position_So13ARPlaneAnchorCSg05planeM0Sb9hitAPlanetSC7CGPointV_So9ARSCNViewC2inSC0I9_float4x4V15frame_transformAH9objectPostF"></a>
                     <a name="//apple_ref/swift/Method/worldPositionFromScreenPosition(_:in:frame_transform:objectPos:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:13ObjectLocator07VirtualA7ManagerC023worldPositionFromScreenF04simd6float3VSg8position_So13ARPlaneAnchorCSg05planeM0Sb9hitAPlanetSC7CGPointV_So9ARSCNViewC2inSC0I9_float4x4VSg15frame_transformAH9objectPostF">worldPositionFromScreenPosition(_:in:frame_transform:objectPos:)</a>
+                    <a class="token" href="#/s:13ObjectLocator07VirtualA7ManagerC023worldPositionFromScreenF04simd6float3VSg8position_So13ARPlaneAnchorCSg05planeM0Sb9hitAPlanetSC7CGPointV_So9ARSCNViewC2inSC0I9_float4x4V15frame_transformAH9objectPostF">worldPositionFromScreenPosition(_:in:frame_transform:objectPos:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -627,7 +627,7 @@ If we have two (ideally from the same user), we can use worldPositionFromStereoS
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">worldPositionFromScreenPosition</span><span class="p">(</span><span class="n">_</span> <span class="nv">position</span><span class="p">:</span> <span class="kt">CGPoint</span><span class="p">,</span>
                                      <span class="k">in</span> <span class="nv">sceneView</span><span class="p">:</span> <span class="kt">ARSCNView</span><span class="p">,</span>
-                                        <span class="nv">frame_transform</span> <span class="p">:</span> <span class="n">matrix_float4x4</span><span class="p">?,</span>
+                                        <span class="nv">frame_transform</span> <span class="p">:</span> <span class="n">matrix_float4x4</span><span class="p">,</span>
                                      <span class="nv">objectPos</span><span class="p">:</span> <span class="n">float3</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nv">position</span><span class="p">:</span> <span class="n">float3</span><span class="p">?,</span> <span class="nv">planeAnchor</span><span class="p">:</span> <span class="kt">ARPlaneAnchor</span><span class="p">?,</span> <span class="nv">hitAPlane</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span></code></pre>
 
                         </div>
@@ -685,9 +685,9 @@ If we have two (ideally from the same user), we can use worldPositionFromStereoS
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:13ObjectLocator07VirtualA7ManagerC029worldPositionFromStereoScreenF04simd6float3VSg8position_So13ARPlaneAnchorCSg05planeN0Sb9hitAPlanetSC7CGPointV16pixel_location_1_AP0s1_T2_2So9ARSCNViewC2inSC0J9_float4x4VSg17frame_transform_1AX0x1_Y2_2AH9objectPostF"></a>
+                    <a name="/s:13ObjectLocator07VirtualA7ManagerC029worldPositionFromStereoScreenF04simd6float3VSg8position_So13ARPlaneAnchorCSg05planeN0Sb9hitAPlanetSC7CGPointV16pixel_location_1_AP0s1_T2_2So9ARSCNViewC2inSC0J9_float4x4V17frame_transform_1AW0x1_Y2_2AH9objectPostF"></a>
                     <a name="//apple_ref/swift/Method/worldPositionFromStereoScreenPosition(pixel_location_1:pixel_location_2:in:frame_transform_1:frame_transform_2:objectPos:)" class="dashAnchor"></a>
-                    <a class="token" href="#/s:13ObjectLocator07VirtualA7ManagerC029worldPositionFromStereoScreenF04simd6float3VSg8position_So13ARPlaneAnchorCSg05planeN0Sb9hitAPlanetSC7CGPointV16pixel_location_1_AP0s1_T2_2So9ARSCNViewC2inSC0J9_float4x4VSg17frame_transform_1AX0x1_Y2_2AH9objectPostF">worldPositionFromStereoScreenPosition(pixel_location_1:pixel_location_2:in:frame_transform_1:frame_transform_2:objectPos:)</a>
+                    <a class="token" href="#/s:13ObjectLocator07VirtualA7ManagerC029worldPositionFromStereoScreenF04simd6float3VSg8position_So13ARPlaneAnchorCSg05planeN0Sb9hitAPlanetSC7CGPointV16pixel_location_1_AP0s1_T2_2So9ARSCNViewC2inSC0J9_float4x4V17frame_transform_1AW0x1_Y2_2AH9objectPostF">worldPositionFromStereoScreenPosition(pixel_location_1:pixel_location_2:in:frame_transform_1:frame_transform_2:objectPos:)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -707,8 +707,8 @@ The function uses methods for stereo triangulation.</p>
                           <pre class="highlight swift"><code><span class="kd">func</span> <span class="nf">worldPositionFromStereoScreenPosition</span><span class="p">(</span><span class="nv">pixel_location_1</span><span class="p">:</span> <span class="kt">CGPoint</span><span class="p">,</span>
                                            <span class="nv">pixel_location_2</span><span class="p">:</span> <span class="kt">CGPoint</span><span class="p">,</span>
                                            <span class="k">in</span> <span class="nv">sceneView</span><span class="p">:</span> <span class="kt">ARSCNView</span><span class="p">,</span>
-                                           <span class="nv">frame_transform_1</span> <span class="p">:</span> <span class="n">matrix_float4x4</span><span class="p">?,</span>
-                                           <span class="nv">frame_transform_2</span> <span class="p">:</span> <span class="n">matrix_float4x4</span><span class="p">?,</span>
+                                           <span class="nv">frame_transform_1</span> <span class="p">:</span> <span class="n">matrix_float4x4</span><span class="p">,</span>
+                                           <span class="nv">frame_transform_2</span> <span class="p">:</span> <span class="n">matrix_float4x4</span><span class="p">,</span>
                                            <span class="nv">objectPos</span><span class="p">:</span> <span class="n">float3</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nv">position</span><span class="p">:</span> <span class="n">float3</span><span class="p">?,</span> <span class="nv">planeAnchor</span><span class="p">:</span> <span class="kt">ARPlaneAnchor</span><span class="p">?,</span> <span class="nv">hitAPlane</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">)</span></code></pre>
 
                         </div>
