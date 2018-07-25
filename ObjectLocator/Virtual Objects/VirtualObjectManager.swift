@@ -182,55 +182,53 @@ class VirtualObjectManager {
     /// - Returns: an optional position in 3D, an optional plane anchor, and Boolean that is true iff the object was located on a plane
 	func worldPositionFromScreenPosition(_ position: CGPoint,
 	                                     in sceneView: ARSCNView,
-                                         frame_transform : matrix_float4x4?,
+                                         frame_transform : matrix_float4x4,
 	                                     objectPos: float3?) -> (position: float3?, planeAnchor: ARPlaneAnchor?, hitAPlane: Bool) {
         // TODO:  In some cases an object sits high above a plane.  Such as a chair on the floor.  In this
         // case you want to first test for a feature point hit, and if the feature point is sufficiently
         // far from a plane hit, you should default to the feature point, else use the plane.
-        if frame_transform != nil {
-            // -------------------------------------------------------------------------------
-            // 1. Always do a hit test against exisiting plane anchors first.
-            //    (If any such anchors exist & only within their extents.)
-            // In order to use the hit test from the point of view of the previous frame, we have to do it manually ourselves
-            guard let ray = sceneView.hitTestRayFromScreenPos(position, overrideFrameTransform: frame_transform) else {
-                return (nil, nil, false)
-            }
-            var worldCoordinatesForPlaneHit: float3?
-            var planeAnchorForPlaneHit: ARPlaneAnchor?
-            var closestPlane:Float?
-
-            for plane in planes {
-                guard let sceneNode = sceneView.node(for: plane.anchor) else {
-                    continue
-                }
-                let newOrigin = sceneNode.convertPosition(SCNVector3(ray.origin), from: sceneView.scene.rootNode)
-                let newDirection = sceneNode.convertVector(SCNVector3(ray.direction), from: sceneView.scene.rootNode)
-                // in the plane's local coordinate system, the normal always points in the positive y direction
-                let distanceToPlane = -newOrigin.y / newDirection.y
-
-                if distanceToPlane > 0 && (closestPlane == nil || distanceToPlane < closestPlane!) {
-                    let collisionPointInPlaneCoordinateSystem = SCNVector3(x: newOrigin.x + distanceToPlane*newDirection.x,
-                                                                           y: newOrigin.y + distanceToPlane*newDirection.y,
-                                                                           z: newOrigin.z + distanceToPlane*newDirection.z)
-                    if abs(collisionPointInPlaneCoordinateSystem.x - plane.anchor.center.x) <= plane.anchor.extent.x/2.0 &&
-                        abs(collisionPointInPlaneCoordinateSystem.z - plane.anchor.center.z) <= plane.anchor.extent.z/2.0 {
-                        closestPlane = distanceToPlane
-
-                        worldCoordinatesForPlaneHit = float3(sceneView.scene.rootNode.convertPosition(collisionPointInPlaneCoordinateSystem, from: sceneNode))
-                        planeAnchorForPlaneHit = plane.anchor
-                    }
-                }
-            }
-            if worldCoordinatesForPlaneHit != nil {
-                print("Found the point on the plane", worldCoordinatesForPlaneHit!)
-                return (worldCoordinatesForPlaneHit, planeAnchorForPlaneHit, true)
-            }
-
-            // -------------------------------------------------------------------------------
-            // 2. Collect more information about the environment by hit testing against
-            //    the feature point cloud. (currenty unsupported, but might be worth revisiting)
+        // -------------------------------------------------------------------------------
+        // 1. Always do a hit test against exisiting plane anchors first.
+        //    (If any such anchors exist & only within their extents.)
+        // In order to use the hit test from the point of view of the previous frame, we have to do it manually ourselves
+        guard let ray = sceneView.hitTestRayFromScreenPos(position, overrideFrameTransform: frame_transform) else {
+            return (nil, nil, false)
         }
-        
+        var worldCoordinatesForPlaneHit: float3?
+        var planeAnchorForPlaneHit: ARPlaneAnchor?
+        var closestPlane:Float?
+
+        for plane in planes {
+            guard let sceneNode = sceneView.node(for: plane.anchor) else {
+                continue
+            }
+            let newOrigin = sceneNode.convertPosition(SCNVector3(ray.origin), from: sceneView.scene.rootNode)
+            let newDirection = sceneNode.convertVector(SCNVector3(ray.direction), from: sceneView.scene.rootNode)
+            // in the plane's local coordinate system, the normal always points in the positive y direction
+            let distanceToPlane = -newOrigin.y / newDirection.y
+
+            if distanceToPlane > 0 && (closestPlane == nil || distanceToPlane < closestPlane!) {
+                let collisionPointInPlaneCoordinateSystem = SCNVector3(x: newOrigin.x + distanceToPlane*newDirection.x,
+                                                                       y: newOrigin.y + distanceToPlane*newDirection.y,
+                                                                       z: newOrigin.z + distanceToPlane*newDirection.z)
+                if abs(collisionPointInPlaneCoordinateSystem.x - plane.anchor.center.x) <= plane.anchor.extent.x/2.0 &&
+                    abs(collisionPointInPlaneCoordinateSystem.z - plane.anchor.center.z) <= plane.anchor.extent.z/2.0 {
+                    closestPlane = distanceToPlane
+
+                    worldCoordinatesForPlaneHit = float3(sceneView.scene.rootNode.convertPosition(collisionPointInPlaneCoordinateSystem, from: sceneNode))
+                    planeAnchorForPlaneHit = plane.anchor
+                }
+            }
+        }
+        if worldCoordinatesForPlaneHit != nil {
+            print("Found the point on the plane", worldCoordinatesForPlaneHit!)
+            return (worldCoordinatesForPlaneHit, planeAnchorForPlaneHit, true)
+        }
+
+        // -------------------------------------------------------------------------------
+        // 2. Collect more information about the environment by hit testing against
+        //    the feature point cloud. (currenty unsupported, but might be worth revisiting)
+    
 		return (nil, nil, false)
 	}
     

@@ -412,13 +412,13 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, AVSp
     ///
     /// - Parameter snapshot: this will be a child of responses/{user.uid} corresponding to a particular job.  It will have all of the responses that have currently been generated for this particular job (not just the latest one).
     func handleResponse(snapshot: DataSnapshot) {
-        guard var job = jobs[snapshot.key] else {
+        guard jobs[snapshot.key] != nil else {
             return
         }
         
         // Throw a way any responses we've processed thus far and reparse them.
         // TODO: this is a kludge.  We probably just shouldn't be storing this info in the job id
-        job.responses.removeAll()
+        jobs[snapshot.key]!.responses.removeAll()
 
         // These variables hold the pixel location and the imageUUID that we will try to map to 3D
         var objectPixelLocation: CGPoint?
@@ -427,12 +427,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, AVSp
         // TODO: take the area with high local density of responses
         for child in snapshot.children.allObjects as! [DataSnapshot] {
             let values = child.value as! [String: Any]
-            objectPixelLocation = CGPoint(x: Double(self.sceneView.bounds.width)*(values["x"] as! Double)/Double(job.sceneImage.size.width), y: Double(self.sceneView.bounds.height)*(values["y"] as! Double)/Double(job.sceneImage.size.height))
+            objectPixelLocation = CGPoint(x: Double(self.sceneView.bounds.width)*(values["x"] as! Double)/Double(jobs[snapshot.key]!.sceneImage.size.width), y: Double(self.sceneView.bounds.height)*(values["y"] as! Double)/Double(jobs[snapshot.key]!.sceneImage.size.height))
             labeledImageUUID = values["imageUUID"] as? String
             if objectPixelLocation != nil && labeledImageUUID != nil {
                 let firstUnderscore = child.key.index(of: "_") ?? child.key.endIndex
                 let labelerID = child.key[..<firstUnderscore]
-                job.responses.append(JobResponse(labelerID: String(labelerID), imageUUID: labeledImageUUID!, pixelLocation: objectPixelLocation!))
+                jobs[snapshot.key]!.responses.append(JobResponse(labelerID: String(labelerID), imageUUID: labeledImageUUID!, pixelLocation: objectPixelLocation!))
             }
         }
         // For now, we are just using the last localization response
@@ -440,15 +440,15 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, AVSp
             return
         }
         // Create a new virtual object with a label that corresponds to the object name
-        let object = VirtualObject(objectToFind: job.objectToFind)
+        let object = VirtualObject(objectToFind: jobs[snapshot.key]!.objectToFind)
         var (worldPos, _, _) = self.virtualObjectManager.worldPositionFromScreenPosition(pixelLocation,
                                                                                          in: self.sceneView,
-                                                                                         frame_transform: job.cameraTransforms[labeledImageUUID!],
+                                                                                         frame_transform: jobs[snapshot.key]!.cameraTransforms[labeledImageUUID!]!,
                                                                                          objectPos: nil)
         if worldPos == nil {
             var labelerResponses = [String: [JobResponse]]()
             var twoResponsesFromSameUser : [JobResponse]? = nil
-            for response in job.responses {
+            for response in jobs[snapshot.key]!.responses {
                 if labelerResponses[response.labelerID] == nil {
                     labelerResponses[response.labelerID] = [response]
                 } else {
@@ -459,7 +459,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, AVSp
             }
             guard let triangulationJobs = twoResponsesFromSameUser else {
                 // wait for more responses
-                job.status = JobStatus.waitingForAdditionalResponse
+                jobs[snapshot.key]!.status = JobStatus.waitingForAdditionalResponse
                 let dbPath = "labeling_jobs/" + snapshot.key + "/job_status"
                 self.db?.reference(withPath: dbPath).setValue("waitingForAdditionalReponse")
                 return
@@ -468,29 +468,33 @@ class ViewController: UIViewController, ARSCNViewDelegate, FUIAuthDelegate, AVSp
             (worldPos, _, _) = self.virtualObjectManager.worldPositionFromStereoScreenPosition(pixel_location_1: triangulationJobs[0].pixelLocation,
                                                                                                pixel_location_2: triangulationJobs[1].pixelLocation,
                                                                                                in: self.sceneView,
-                                                                                               frame_transform_1: job.cameraTransforms[triangulationJobs[0].imageUUID]!,
-                                                                                               frame_transform_2: job.cameraTransforms[triangulationJobs[1].imageUUID]!,
+                                                                                               frame_transform_1: jobs[snapshot.key]!.cameraTransforms[triangulationJobs[0].imageUUID]!,
+                                                                                               frame_transform_2: jobs[snapshot.key]!.cameraTransforms[triangulationJobs[1].imageUUID]!,
                                                                                                objectPos: nil)
         }
         if worldPos == nil {
             // give up
-            job.status = JobStatus.failed
+            jobs[snapshot.key]!.status = JobStatus.failed
             jobs[snapshot.key] = nil
             // TOOD: we might want to consider updating the job_status to a new value in Firebase (e.g., failed)
             return
         }
+        let frameTransform = jobs[snapshot.key]!.cameraTransforms[snapshot.key]!
+        let objectToAnnounce = self.jobs[snapshot.key]!.objectToFind
+        
         // kill the job... so we don't add it twice
-        job.status = JobStatus.placed
+        jobs[snapshot.key]!.status = JobStatus.placed
         let dbPath = "labeling_jobs/" + snapshot.key + "/job_status"
         self.db?.reference(withPath: dbPath).setValue("objectPlaced")
         jobs[snapshot.key] = nil
-        
+    
         // Next, place the cube with the floating label of the job into the scene and announce that the object has been found to the user
-        self.virtualObjectManager.loadVirtualObject(object, to: worldPos!, cameraTransform: job.cameraTransforms[snapshot.key]!)
+        self.virtualObjectManager.loadVirtualObject(object, to: worldPos!, cameraTransform: frameTransform)
+
         if object.parent == nil {
             self.serialQueue.async {
                 self.sceneView.scene.rootNode.addChildNode(object)
-                self.announce(announcement: "Found " + job.objectToFind)
+                self.announce(announcement: "Found " + objectToAnnounce)
             }
         }
     }
