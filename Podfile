@@ -10,7 +10,9 @@ target 'ObjectLocator' do
   pod 'Firebase/Core'
   pod 'Firebase/Auth'
   pod 'Firebase/Database'
+  pod 'Firebase/Messaging'
+  pod 'Firebase/Storage'
   pod 'FirebaseUI/Phone'
   pod 'FirebaseUI/Auth'
-  pod 'Firebase/Storage'
+  pod 'VectorMath', '~> 0.3'
 end

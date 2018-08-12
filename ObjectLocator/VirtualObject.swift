@@ -9,30 +9,16 @@ import Foundation
 import SceneKit
 import ARKit
 
-struct VirtualObjectDefinition: Codable, Equatable {
-    let modelName: String
-    let displayName: String
-    let particleScaleInfo: [String: Float]
-    
-    lazy var thumbImage: UIImage = UIImage(named: self.modelName)!
-    
-    init(modelName: String, displayName: String, particleScaleInfo: [String: Float] = [:]) {
-        self.modelName = modelName
-        self.displayName = displayName
-        self.particleScaleInfo = particleScaleInfo
-    }
-    
-    static func ==(lhs: VirtualObjectDefinition, rhs: VirtualObjectDefinition) -> Bool {
-        return lhs.modelName == rhs.modelName
-            && lhs.displayName == rhs.displayName
-            && lhs.particleScaleInfo == rhs.particleScaleInfo
-    }
-}
-
+/// Tracks a virtual object placed in the scene
 class VirtualObject: SCNNode {
+    /// The label of the virtual object (this is the same as what the user indicated when requesting the localization job)
     let objectToFind: String
+    /// The scene node for the virtual object (currently this is just a cube).
     let cubeNode: SCNNode
     
+    /// Initialize an object
+    ///
+    /// - Parameter objectToFind: the object the user is requesting to find
     init(objectToFind: String) {
         self.objectToFind = objectToFind
         
@@ -52,6 +38,9 @@ class VirtualObject: SCNNode {
         center(node: textNode)
     }
     
+    /// Center a scene node
+    ///
+    /// - Parameter node: the node to center
     func center(node: SCNNode) {
         let (min, max) = node.boundingBox
         
@@ -61,6 +50,9 @@ class VirtualObject: SCNNode {
         node.pivot = SCNMatrix4MakeTranslation(dx, dy, dz)
     }
     
+    /// This has not been implemented
+    ///
+    /// - Parameter aDecoder: NSCoder
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -68,6 +60,10 @@ class VirtualObject: SCNNode {
 
 extension VirtualObject {
 	
+    /// Checks of a particular node is part of a virtual object
+    ///
+    /// - Parameter node: the scene node to test for membership
+    /// - Returns: the virtual object (if the node is part of a virtual object), nil otherwise
 	static func isNodePartOfVirtualObject(_ node: SCNNode) -> VirtualObject? {
 		if let virtualObjectRoot = node as? VirtualObject {
 			return virtualObjectRoot
@@ -80,25 +76,4 @@ extension VirtualObject {
 		return nil
 	}
     
-}
-
-// MARK: - Protocols for Virtual Objects
-
-protocol ReactsToScale {
-	func reactToScale()
-}
-
-extension SCNNode {
-	
-	func reactsToScale() -> ReactsToScale? {
-		if let canReact = self as? ReactsToScale {
-			return canReact
-		}
-		
-		if parent != nil {
-			return parent!.reactsToScale()
-		}
-		
-		return nil
-	}
 }

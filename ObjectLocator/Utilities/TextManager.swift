@@ -8,14 +8,22 @@ Utility class for showing messages above the AR view.
 import Foundation
 import ARKit
 
+/// The message type (for informational messages to the user)
+///
+/// - trackingStateEscalation: tracking state has been bad for a while
+/// - planeEstimation: a new plane has been found
+/// - contentPlacement: new content has been placed
 enum MessageType {
+    /// tracking state has been bad for a while
 	case trackingStateEscalation
+    /// a new plane has been found
 	case planeEstimation
+    /// new content has been placed
 	case contentPlacement
-	case focusSquare
 }
 
 extension ARCamera.TrackingState {
+    /// A mapping between the ARKit error code and a human presentable message
     var presentationString: String {
         switch self {
         case .notAvailable:
@@ -37,35 +45,53 @@ extension ARCamera.TrackingState {
     }
 }
 
+/// A class that controls showing informational messages about the state of the ARSession to the user
 class TextManager {
     
     // MARK: - Properties
     
+    /// A handle to the view controller that embeds this text manager
     private var viewController: ViewController!
     
-    // Timer for hiding messages
+    /// Timer for hiding messages
     private var messageHideTimer: Timer?
     
-    // Timers for showing scheduled messages
-    private var focusSquareMessageTimer: Timer?
+    // MARK: - Timers for showing scheduled messages
+    
+    /// A timer for showing that a plane has been found
     private var planeEstimationMessageTimer: Timer?
+
+    /// A timer to control when a content placed message is shown
     private var contentPlacementMessageTimer: Timer?
     
-    // Timer for tracking state escalation
+    /// Timer for tracking state escalation
     private var trackingStateFeedbackEscalationTimer: Timer?
     
+    /// Blur effect parameter (TOOD: figure out what this does)
     let blurEffectViewTag = 100
+    
+    /// True if no more messages should be scheduled
     var schedulingMessagesBlocked = false
+
+    /// The Alert controller (e.g., presented when the ARSession dies)
     var alertController: UIAlertController?
     
     // MARK: - Initialization
     
+    /// Initialize a new text manager
+    ///
+    /// - Parameter viewController: the view controller that embeds this text manager
 	init(viewController: ViewController) {
 		self.viewController = viewController
 	}
     
     // MARK: - Message Handling
 	
+    /// Show a message
+    ///
+    /// - Parameters:
+    ///   - text: the text to display
+    ///   - autoHide: true if we should autohide the message after displaying, false otherwise
 	func showMessage(_ text: String, autoHide: Bool = true) {
 		DispatchQueue.main.async {
             if UIAccessibilityIsVoiceOverRunning() {
@@ -98,6 +124,12 @@ class TextManager {
 		}
 	}
     
+    /// Schedule a message to appear some time interval in the future
+    ///
+    /// - Parameters:
+    ///   - text: the message to display
+    ///   - seconds: the time before displaying the message
+    ///   - messageType: the type of message
 	func scheduleMessage(_ text: String, inSeconds seconds: TimeInterval, messageType: MessageType) {
 		// Do not schedule a new message if a feedback escalation alert is still on screen.
 		guard !schedulingMessagesBlocked else {
@@ -107,7 +139,6 @@ class TextManager {
 		var timer: Timer?
 		switch messageType {
 		case .contentPlacement: timer = contentPlacementMessageTimer
-		case .focusSquare: timer = focusSquareMessageTimer
 		case .planeEstimation: timer = planeEstimationMessageTimer
 		case .trackingStateEscalation: timer = trackingStateFeedbackEscalationTimer
 		}
@@ -125,17 +156,18 @@ class TextManager {
 		})
 		switch messageType {
 		case .contentPlacement: contentPlacementMessageTimer = timer
-		case .focusSquare: focusSquareMessageTimer = timer
 		case .planeEstimation: planeEstimationMessageTimer = timer
 		case .trackingStateEscalation: trackingStateFeedbackEscalationTimer = timer
 		}
 	}
     
+    /// Cancel any messages that have yet to be presented to the user
+    ///
+    /// - Parameter messageType: the type of messages to cancel
     func cancelScheduledMessage(forType messageType: MessageType) {
         var timer: Timer?
         switch messageType {
         case .contentPlacement: timer = contentPlacementMessageTimer
-        case .focusSquare: timer = focusSquareMessageTimer
         case .planeEstimation: timer = planeEstimationMessageTimer
         case .trackingStateEscalation: timer = trackingStateFeedbackEscalationTimer
         }
@@ -146,19 +178,29 @@ class TextManager {
         }
     }
     
+    /// Cancel all pending messages (regardless of type)
     func cancelAllScheduledMessages() {
         cancelScheduledMessage(forType: .contentPlacement)
         cancelScheduledMessage(forType: .planeEstimation)
         cancelScheduledMessage(forType: .trackingStateEscalation)
-        cancelScheduledMessage(forType: .focusSquare)
     }
     
     // MARK: - ARKit
     
+    /// Show the tracking quality state
+    ///
+    /// - Parameters:
+    ///   - trackingState: the tracking state
+    ///   - autoHide: whether to auto hide after presentation
 	func showTrackingQualityInfo(for trackingState: ARCamera.TrackingState, autoHide: Bool) {
 		showMessage(trackingState.presentationString, autoHide: autoHide)
 	}
-	
+
+    /// Escalate the tracking feedback state (results in an alert dialog)
+    ///
+    /// - Parameters:
+    ///   - trackingState: the tracking state
+    ///   - autoHide: whether to auto hide after presentation
 	func escalateFeedback(for trackingState: ARCamera.TrackingState, inSeconds seconds: TimeInterval) {
 		if self.trackingStateFeedbackEscalationTimer != nil {
 			self.trackingStateFeedbackEscalationTimer!.invalidate()
@@ -204,6 +246,12 @@ class TextManager {
     
     // MARK: - Alert View
     
+    /// Show an alert
+    ///
+    /// - Parameters:
+    ///   - title: the title of the alert
+    ///   - message: the description of the alert
+    ///   - actions: the actions tht can be performed
 	func showAlert(title: String, message: String, actions: [UIAlertAction]? = nil) {
 		alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
 		if let actions = actions {
@@ -218,6 +266,7 @@ class TextManager {
 		}
 	}
 	
+    /// Dismiss an alert that has been presented
 	func dismissPresentedAlert() {
 		DispatchQueue.main.async {
 			self.alertController?.dismiss(animated: true, completion: nil)
@@ -226,6 +275,7 @@ class TextManager {
 	
     // MARK: - Background Blur
 	
+    /// Blur the background (e.g., in response to a tracking error)
 	func blurBackground() {
 		let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.light)
 		let blurEffectView = UIVisualEffectView(effect: blurEffect)
@@ -235,6 +285,7 @@ class TextManager {
 		viewController.view.addSubview(blurEffectView)
 	}
 	
+    /// Unblur the background (e.g., in response to a tracking recovery)
 	func unblurBackground() {
 		for view in viewController.view.subviews {
 			if let blurView = view as? UIVisualEffectView, blurView.tag == blurEffectViewTag {
@@ -245,6 +296,11 @@ class TextManager {
 	
 	// MARK: - Panel Visibility
     
+    /// Show a message and then potentially hide it and optentially animate it
+    ///
+    /// - Parameters:
+    ///   - hide: whether to hide the message
+    ///   - animated: whether to animate
 	private func showHideMessage(hide: Bool, animated: Bool) {
 		if !animated {
 			viewController.messageLabel.isHidden = hide
@@ -260,6 +316,7 @@ class TextManager {
 		}, completion: nil)
 	}
 	
+    /// Set whether the message panel is hidden based on whether the messageLabel is hidden
 	private func updateMessagePanelVisibility() {
 		// Show and hide the panel depending whether there is something to show.
 		viewController.messagePanel.isHidden = viewController.messageLabel.isHidden

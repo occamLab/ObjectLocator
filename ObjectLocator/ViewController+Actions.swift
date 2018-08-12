@@ -10,29 +10,14 @@ import SceneKit
 
 extension ViewController: UIPopoverPresentationControllerDelegate {
     
-    enum SegueIdentifier: String {
-        case showSettings
-        case showObjects
-    }
-    
     // MARK: - Interface Actions
     
-    @IBAction func chooseObject(_ button: UIButton) {
-        // Abort if we are about to load another object to avoid concurrent modifications of the scene.
-        if isLoadingObject { return }
-        if useSpeechRecognizer && speechRecognitionAuthorized {
-            let startVoiceRecognitionTask = DispatchWorkItem {
-                self.announce(announcement: "Starting voice recognition", overrideRestartVoiceOver: true, overrideStartVoiceOverValue: true)
-            }
-            // wait for a little bit for voice over to complete
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1, execute: startVoiceRecognitionTask)
-            return
-        }
-
-        textManager.cancelScheduledMessage(forType: .contentPlacement)
-        performSegue(withIdentifier: SegueIdentifier.showObjects.rawValue, sender: button)
-    }
-    
+    /// Restart the experience.  This function does following things.
+    /// * Tells the user the session is restarting
+    /// * Temporarily disables the add object button
+    /// * clears all placed virtual objects
+    ///
+    /// - Parameter sender: the sender that caused the restart
     @IBAction func restartExperience(_ sender: Any) {
         
         guard restartExperienceButtonIsEnabled, !isLoadingObject else { return }
@@ -61,21 +46,25 @@ extension ViewController: UIPopoverPresentationControllerDelegate {
     
     // MARK: - UIPopoverPresentationControllerDelegate
     
+    /// Makes sure that popovers are not modal
+    ///
+    /// - Parameter controller: the presentation controller
+    /// - Returns: whether or not to use modal style
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
         return .none
     }
     
+    /// Ensures that all popover segues are popovers (note: I don't quite understand when this would *not* be the case)
+    ///
+    /// - Parameters:
+    ///   - segue: the segue
+    ///   - sender: the sender who generated this prepare call
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         // All popover segues should be popovers even on iPhone.
         if let popoverController = segue.destination.popoverPresentationController, let button = sender as? UIButton {
             popoverController.delegate = self
             popoverController.sourceRect = button.bounds
-        }
-        
-        guard let identifier = segue.identifier, let segueIdentifer = SegueIdentifier(rawValue: identifier) else { return }
-        if segueIdentifer == .showObjects, let objectsViewController = segue.destination as? VirtualObjectSelectionViewController {
-            objectsViewController.delegate = self
         }
     }
     
